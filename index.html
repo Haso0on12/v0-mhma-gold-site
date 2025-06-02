@@ -34,7 +34,8 @@
   </footer>
 
   <script>
-    fetch('https://mhma-api.onrender.com/api/gold-prices')
+    fetch('https://mhma-gold-backend.onrender.com/api/gold-prices')
+
       .then(res => res.json())
       .then(data => {
         const table = document.getElementById('gold-prices');
