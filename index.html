@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MHMA - Live Gold Prices</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900">
+  <header class="bg-blue-900 text-white p-4 flex justify-between items-center">
+    <img src="logo.png" alt="MHMA Logo" class="h-12">
+    <h1 class="text-2xl font-bold">LIVE GOLD PRICES</h1>
+  </header>
+  <main class="p-6">
+    <h2 class="text-xl font-semibold mb-4">Live Gold Price Table</h2>
+    <table class="min-w-full bg-white border border-gray-200 text-center">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="py-2 px-4 border">GOLD</th>
+          <th class="py-2 px-4 border">SELL</th>
+          <th class="py-2 px-4 border">BUY</th>
+        </tr>
+      </thead>
+      <tbody id="gold-prices" class="text-lg">
+        <tr><td colspan="3" class="py-4">Loading...</td></tr>
+      </tbody>
+    </table>
+    <p class="text-sm mt-2 text-gray-600">Prices are in Saudi Riyals (SAR)</p>
+  </main>
+  <footer class="bg-blue-50 text-center text-sm p-4 mt-6">
+    <p>Contact: mhma-alarbash@outlook.com | Phone: 0530091668 | Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3</p>
+  </footer>
+
+  <script>
+    fetch('https://mhma-api.onrender.com/api/gold-prices')
+      .then(res => res.json())
+      .then(data => {
+        const table = document.getElementById('gold-prices');
+        table.innerHTML = '';
+        Object.entries(data).forEach(([karat, prices]) => {
+          table.innerHTML += `
+            <tr>
+              <td class="border py-2">${karat}</td>
+              <td class="border py-2">${prices.sell}</td>
+              <td class="border py-2">${prices.buy}</td>
+            </tr>`;
+        });
+      })
+      .catch(() => {
+        document.getElementById('gold-prices').innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">Failed to load data</td></tr>';
+      });
+  </script>
+</body>
+</html>
