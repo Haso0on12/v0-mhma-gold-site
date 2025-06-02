@@ -34,19 +34,15 @@
   </footer>
 
 <script>
-  fetch('https://mhma-gold-backend.onrender.com/api/gold-prices')
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById('gold-prices');
-      table.innerHTML = '';
-      Object.entries(data).forEach(([karat, prices]) => {
-        table.innerHTML += `
-          <tr>
-            <td class="border py-2">${karat}</td>
-            <td class="border py-2">${prices.sell} ﷼</td>
-            <td class="border py-2">${prices.buy} ﷼</td>
-          </tr>`;
-      });
+fetch('https://metals-api.com/api/latest?access_key=YOUR_API_KEY&base=USD&symbols=XAU,SAR')
+  .then(res => res.json())
+  .then(data => {
+    const usdToSar = data.rates.SAR;
+    const goldPriceUSD = data.rates.XAU;
+    const goldPriceSAR = goldPriceUSD * usdToSar;
+    console.log('Gold Price in SAR:', goldPriceSAR.toFixed(2));
+  });
+
     })
     .catch(() => {
       document.getElementById('gold-prices').innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">Failed to load data</td></tr>';
