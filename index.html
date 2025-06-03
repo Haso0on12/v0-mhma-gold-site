@@ -79,7 +79,14 @@ statusDiv.innerHTML = `
   <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
   <span class="text-yellow-600">جارٍ التحميل...</span>
 `;
+var myHeaders = new Headers();
+myHeaders.append("x-access-token", "goldapi-250cmsmbg51sfv-io");
+myHeaders.append("Content-Type", "application/json");
 
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  redirect: 'follow'
 fetch("https://www.goldapi.io/api/XAU/SAR", requestOptions)
   .then(response => response.text())
   .then(result => console.log(result))
