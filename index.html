@@ -74,23 +74,26 @@
 const statusDiv = document.getElementById('connection-status');
 const pricesTable = document.getElementById('gold-prices');
 
-// عرض الدائرة الصفراء مبدئيًا
+// عرض الدائرة الصفراء أثناء التحميل
 statusDiv.innerHTML = `
   <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
   <span class="text-yellow-600">جارٍ التحميل...</span>
 `;
-var myHeaders = new Headers();
+
+const myHeaders = new Headers();
 myHeaders.append("x-access-token", "goldapi-250cmsmbg51sfv-io");
 myHeaders.append("Content-Type", "application/json");
 
-var requestOptions = {
+const requestOptions = {
   method: 'GET',
   headers: myHeaders,
   redirect: 'follow'
+};
+
 fetch("https://www.goldapi.io/api/XAU/SAR", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));
+  .then(response => response.json())
+  .then(data => {
+    const goldPriceSAR = data.price;
 
     pricesTable.innerHTML = `
       <tr>
@@ -100,23 +103,20 @@ fetch("https://www.goldapi.io/api/XAU/SAR", requestOptions)
       </tr>
     `;
 
-    // ✅ حالة النجاح – دائرة خضراء
     statusDiv.innerHTML = `
       <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
       <span class="text-green-600">تم تحميل الأسعار</span>
     `;
   })
   .catch(() => {
-    // ❌ حالة الفشل – دائرة حمراء
     pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل البيانات</td></tr>';
     statusDiv.innerHTML = `
       <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
       <span class="text-red-600">تعذر الاتصال</span>
     `;
   });
-
-    });
 </script>
+
 
 </body>
 </html>
