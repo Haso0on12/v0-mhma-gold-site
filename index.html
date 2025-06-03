@@ -135,6 +135,11 @@ fetchGoldPrices();
 
 // ⏱️ تحديث كل دقيقة (60,000 ملي ثانية)
 setInterval(fetchGoldPrices, 30000);
+
+    if (!goldPriceSAR || isNaN(goldPriceSAR)) {
+  throw new Error("Gold price is invalid");
+}
+
 </script>
 
 
