@@ -80,12 +80,10 @@ statusDiv.innerHTML = `
   <span class="text-yellow-600">جارٍ التحميل...</span>
 `;
 
-fetch('https://metals-api.com/api/latest?access_key=YOUR_API_KEY&base=USD&symbols=XAU,SAR')
-  .then(res => res.json())
-  .then(data => {
-    const usdToSar = data.rates.SAR;
-    const goldPriceUSD = data.rates.XAU;
-    const goldPriceSAR = goldPriceUSD * usdToSar;
+fetch("https://www.goldapi.io/api/XAU/SAR", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
 
     pricesTable.innerHTML = `
       <tr>
