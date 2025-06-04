@@ -99,14 +99,18 @@ function fetchGoldPrice() {
       let rows = '';
 
       // ⬅️ صف الأونصة أولاً
-      rows += `
-        <tr class="bg-gray-50 font-bold">
-          <td colspan="2" class="border py-2 text-center">
-            <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${pricePerOunceSAR.toFixed(2)}
-          </td>
-          <td class="border py-2">سعر الأونصة</td>
-        </tr>
-      `;
+    rows += `
+  <tr class="bg-gray-50 font-bold">
+    <td class="border py-2">
+      <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR - 5).toFixed(2)}
+    </td>
+    <td class="border py-2">
+      <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR + 5).toFixed(2)}
+    </td>
+    <td class="border py-2">أونصة</td>
+  </tr>
+`;
+
 
       // ⬇️ باقي العيارات
       for (const [karat, price] of Object.entries(goldPrices)) {
