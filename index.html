@@ -81,68 +81,50 @@
       }
     }
 
-   function renderTable() {
-  fetch("https://www.goldapi.io/api/XAU/SAR", {
-    headers: {
-      "x-access-token": "goldapi-jzk9smbg88nt7-io",
-      "Content-Type": "application/json"
+    function renderTable() {
+      fetch("https://www.goldapi.io/api/XAU/SAR", {
+        headers: {
+          "x-access-token": "goldapi-jzk9smbg88nt7-io",
+          "Content-Type": "application/json"
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        const pricePerOunce = parseFloat(data.price);
+        const pricePerGram24K = pricePerOunce / 31.1035;
+
+        const karats = {
+          "24": pricePerGram24K,
+          "22": pricePerGram24K * 0.916,
+          "21": pricePerGram24K * 0.875,
+          "18": pricePerGram24K * 0.750,
+        };
+
+        let rows = "";
+        for (const [karat, price] of Object.entries(karats)) {
+          const adjustment = parseFloat(localStorage.getItem(`adj_${karat}`) || "0");
+          const buy = (price + adjustment - 2).toFixed(2);
+          const sell = (price + adjustment + 2).toFixed(2);
+
+          rows += `
+            <tr>
+              <td class="border py-2">
+                <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${buy}
+              </td>
+              <td class="border py-2">
+                <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${sell}
+              </td>
+              <td class="border py-2">${karat} قيراط</td>
+            </tr>
+          `;
+        }
+
+        document.getElementById("gold-prices").innerHTML = rows;
+      })
+      .catch(() => {
+        document.getElementById("gold-prices").innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل البيانات</td></tr>';
+      });
     }
-  })
-  .then(res => res.json())
-  .then(data => {
-    const pricePerOunce = parseFloat(data.price);
-    const pricePerGram24K = pricePerOunce / 31.1035;
-
-    const karats = {
-      "24": pricePerGram24K,
-      "22": pricePerGram24K * 0.916,
-      "21": pricePerGram24K * 0.875,
-      "18": pricePerGram24K * 0.750,
-    };
-
-    let rows = "";
-
-    // ✅ الأونصة أولاً
-    const ounceBuy = (pricePerOunce - 5).toFixed(2);
-    const ounceSell = (pricePerOunce + 5).toFixed(2);
-    rows += `
-      <tr class="bg-gray-50 font-bold">
-        <td class="border py-2">
-          <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${ounceBuy}
-        </td>
-        <td class="border py-2">
-          <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${ounceSell}
-        </td>
-        <td class="border py-2">أونصة</td>
-      </tr>
-    `;
-
-    // ✅ باقي العيارات
-    for (const [karat, price] of Object.entries(karats)) {
-      const adjustment = parseFloat(localStorage.getItem(`adj_${karat}`) || "0");
-      const buy = (price + adjustment - 2).toFixed(2);
-      const sell = (price + adjustment + 2).toFixed(2);
-
-      rows += `
-        <tr>
-          <td class="border py-2">
-            <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${buy}
-          </td>
-          <td class="border py-2">
-            <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${sell}
-          </td>
-          <td class="border py-2">${karat} قيراط</td>
-        </tr>
-      `;
-    }
-
-    document.getElementById("gold-prices").innerHTML = rows;
-  })
-  .catch(() => {
-    document.getElementById("gold-prices").innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل البيانات</td></tr>';
-  });
-}
-
   </script>
 </body>
 </html>
