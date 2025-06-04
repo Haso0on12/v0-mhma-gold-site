@@ -63,23 +63,6 @@
   </div>
 </footer>
 
-ممتاز، لتحديث الأسعار **مرة واحدة يوميًا فقط** بدلًا من كل 30 دقيقة، كل ما نحتاجه هو تعديل هذا السطر في آخر السكربت:
-
-```js
-setInterval(fetchGoldPrice, 1800000); // كل 30 دقيقة
-```
-
-إلى:
-
-```js
-setInterval(fetchGoldPrice, 86400000); // كل 24 ساعة = 86400 ثانية = 86400000 ملي ثانية
-```
-
----
-
-### ✅ الكود النهائي بعد التعديل:
-
-```html
 <script>
 const statusDiv = document.getElementById('connection-status');
 const pricesTable = document.getElementById('gold-prices');
