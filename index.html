@@ -71,7 +71,6 @@
 </div>
   </footer>
 
-
 <script>
 const statusDiv = document.getElementById('connection-status');
 const pricesTable = document.getElementById('gold-prices');
@@ -95,35 +94,33 @@ function fetchGoldPrice() {
   fetch("https://www.goldapi.io/api/XAU/SAR", requestOptions)
     .then(response => response.json())
     .then(data => {
-      const goldPriceSAR = parseFloat(data.price);
+      const pricePerOunce = parseFloat(data.price);
+      if (!pricePerOunce || isNaN(pricePerOunce)) throw new Error("Invalid price");
 
-      if (!goldPriceSAR || isNaN(goldPriceSAR)) throw new Error("Invalid price");
+      // تحويل الأونصة إلى غرام
+      const pricePerGram24K = pricePerOunce / 31.1035;
 
-const pricePerGram = (parseFloat(data.price) / 31.1035);
- // السعر الأساسي للـ24 قيراط
+      // حساب العيارات الأخرى
+      const goldPrices = {
+        "24": pricePerGram24K,
+        "22": pricePerGram24K * 0.916,
+        "21": pricePerGram24K * 0.875,
+        "18": pricePerGram24K * 0.750
+      };
 
-// حساب أسعار العيارات بناءً على النسبة الفعلية
-const goldPrices = {
-  "24": goldPrice24,
-  "22": goldPrice24 * 0.916,
-  "21": goldPrice24 * 0.875,
-  "18": goldPrice24 * 0.750
-};
+      let rows = '';
+      for (const [karat, price] of Object.entries(goldPrices)) {
+        const buy = (price - 2).toFixed(2);  // فرق شراء
+        const sell = (price + 2).toFixed(2); // فرق بيع
 
-let rows = '';
-for (const [karat, price] of Object.entries(goldPrices)) {
-  const buy = (price - 2).toFixed(2);  // فرق بسيط للشراء
-  const sell = (price + 2).toFixed(2); // فرق بسيط للبيع
-
-  rows += `
-    <tr>
-      <td class="border py-2">${buy} <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /></td>
-      <td class="border py-2">${sell} <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /></td>
-      <td class="border py-2">${karat} قيراط</td>
-    </tr>
-  `;
-}
-
+        rows += `
+          <tr>
+            <td class="border py-2">${buy} <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /></td>
+            <td class="border py-2">${sell} <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /></td>
+            <td class="border py-2">${karat} قيراط</td>
+          </tr>
+        `;
+      }
 
       pricesTable.innerHTML = rows;
       statusDiv.innerHTML = `
@@ -140,8 +137,10 @@ for (const [karat, price] of Object.entries(goldPrices)) {
     });
 }
 
-// ✅ تنفيذ مباشر وتحديث كل 30 ثانية
+// ✅ تنفيذ أول مرة
 fetchGoldPrice();
+
+// ⏱ تحديث كل 30 دقيقة (1800000 مللي ثانية)
 setInterval(fetchGoldPrice, 1800000);
 </script>
 
