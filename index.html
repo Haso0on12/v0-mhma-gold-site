@@ -99,12 +99,13 @@ function fetchGoldPrice() {
 
       if (!goldPriceSAR || isNaN(goldPriceSAR)) throw new Error("Invalid price");
 
-      const karats = {
-        "24": 1,
-        "22": 22 / 24,
-        "21": 21 / 24,
-        "18": 18 / 24
-      };
+     const goldPrices = {
+  "24": data.price,
+  "22": data.price - 7,
+  "21": data.price - 10,
+  "18": data.price - 18
+};
+
 
       let rows = '';
       for (const [karat, factor] of Object.entries(karats)) {
