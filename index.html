@@ -1,55 +1,36 @@
-<!-- صفحة تسجيل الدخول + جدول أسعار الذهب مع لوحة تحكم مصغّرة -->
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تسجيل الدخول | MHMA</title>
+  <title>MHMA - Live Gold Prices</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Cairo', sans-serif;
     }
   </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div id="app" class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-4 text-center">تسجيل الدخول</h2>
-    <div class="mb-4">
-      <label class="block text-sm font-medium">اسم المستخدم</label>
-      <input id="username" type="text" class="w-full mt-1 p-2 border rounded" />
-    </div>
-    <div class="mb-4">
-      <label class="block text-sm font-medium">كلمة المرور</label>
-      <input id="password" type="password" class="w-full mt-1 p-2 border rounded" />
-    </div>
-    <button onclick="login()" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">دخول</button>
-    <p id="login-error" class="text-red-500 text-sm mt-2 hidden">بيانات الدخول غير صحيحة</p>
-  </div>
+<body class="bg-white text-gray-900">
 
-  <div id="dashboard" class="hidden w-full max-w-4xl p-6 mx-auto">
-    <h2 class="text-xl font-semibold mb-4 text-center">تعديل الزيادة لكل عيار</h2>
-    <div class="grid grid-cols-2 gap-4 mb-6">
-      <div>
-        <label class="block text-sm font-medium">زيادة 24 قيراط</label>
-        <input id="adj-24" type="number" value="2" class="w-full mt-1 p-2 border rounded" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">زيادة 22 قيراط</label>
-        <input id="adj-22" type="number" value="2" class="w-full mt-1 p-2 border rounded" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">زيادة 21 قيراط</label>
-        <input id="adj-21" type="number" value="2" class="w-full mt-1 p-2 border rounded" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">زيادة 18 قيراط</label>
-        <input id="adj-18" type="number" value="2" class="w-full mt-1 p-2 border rounded" />
-      </div>
-    </div>
-    <button onclick="renderTable()" class="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">تحديث الأسعار</button>
+<header class="bg-blue-50 text-white px-4 relative flex items-center justify-between" style="height: 200px;">
+  <img src="logo.png" alt="MHMA Logo"
+       class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+       style="height: 200px; max-width: none;" />
+</header>
 
-    <table class="min-w-full mt-6 bg-white border border-gray-200 text-center">
+<main class="p-6 flex justify-center">
+  <div class="w-full max-w-2xl">
+    <h2 class="text-xl font-semibold mb-2 text-center">أسعار الذهب (مباشرة)</h2>
+
+    <!-- دائرة الحالة -->
+    <div id="connection-status" class="flex justify-center items-center gap-2 mb-4 text-lg font-semibold">
+      <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
+      <span class="text-yellow-600">...جارٍ التحميل</span>
+    </div>
+
+    <table class="min-w-full bg-white border border-gray-200 text-center">
       <thead class="bg-gray-100">
         <tr>
           <th class="py-2 px-4 border">الشراء</th>
@@ -58,73 +39,118 @@
         </tr>
       </thead>
       <tbody id="gold-prices" class="text-lg">
-        <tr><td colspan="3" class="py-4">جاري التحميل...</td></tr>
+        <tr><td colspan="3" class="py-4">Loading...</td></tr>
       </tbody>
     </table>
+
+    <p class="text-sm mt-2 text-gray-600 text-center">Prices are in Saudi Riyals (SAR)</p>
   </div>
+</main>
 
-  <script>
-    const CORRECT_USERNAME = "admin";
-    const CORRECT_PASSWORD = "123456";
+<footer class="bg-blue-50 text-center text-sm p-4 mt-6">
+  <p> Contact: mhma-alarbash@outlook.com  |  Phone: 0530091668 , 0138997999  |  Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3 </p>
+  <!-- أيقونات التواصل -->
+  <div class="fixed bottom-4 left-4 flex flex-col items-center gap-2">
+    <a href="https://www.instagram.com/mhma_alarbash?igsh=cjgwdmR3Y29wMzU=" target="_blank">
+      <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" alt="Instagram" class="w-6 h-6" />
+    </a>
+    <a href="https://wa.me/966530091668" target="_blank">
+      <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp" class="w-6 h-6" />
+    </a>
+    <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank">
+      <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Map" class="w-6 h-6" />
+    </a>
+  </div>
+</footer>
 
-    function login() {
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
-      const error = document.getElementById("login-error");
+<script>
+const statusDiv = document.getElementById('connection-status');
+const pricesTable = document.getElementById('gold-prices');
 
-      if (user === CORRECT_USERNAME && pass === CORRECT_PASSWORD) {
-        document.getElementById("app").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-        renderTable();
-      } else {
-        error.classList.remove("hidden");
+const requestOptions = {
+  method: 'GET',
+  redirect: 'follow'
+};
+
+function fetchGoldPrice() {
+  statusDiv.innerHTML = `
+    <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
+    <span class="text-yellow-600">جارٍ التحميل...</span>
+  `;
+
+  fetch("https://api.metalpriceapi.com/v1/latest?api_key=01b928f933da5df8aea4fa0eee5054cb&base=USD&currencies=XAU,SAR", requestOptions)
+    .then(response => response.json())
+    .then(data => {
+      const pricePerOunceUSD = 1 / data.rates.XAU;
+      const sarRate = data.rates.SAR;
+      const pricePerOunceSAR = pricePerOunceUSD * sarRate;
+
+      if (!pricePerOunceSAR || isNaN(pricePerOunceSAR)) throw new Error("Invalid price");
+
+      const pricePerGram24K = pricePerOunceSAR / 31.1035;
+
+      const goldPrices = {
+        "24": pricePerGram24K,
+        "22": pricePerGram24K * 0.916,
+        "21": pricePerGram24K * 0.875,
+        "18": pricePerGram24K * 0.750
+      };
+
+      let rows = '';
+
+      // ⬅️ صف الأونصة أولاً
+    rows += `
+  <tr class="bg-gray-50 font-bold">
+    <td class="border py-2">
+      <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR - 5).toFixed(2)}
+    </td>
+    <td class="border py-2">
+      <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR + 5).toFixed(2)}
+    </td>
+    <td class="border py-2">أونصة</td>
+  </tr>
+`;
+
+
+      // ⬇️ باقي العيارات
+      for (const [karat, price] of Object.entries(goldPrices)) {
+        const buy = (price - 2).toFixed(2);
+        const sell = (price + 2).toFixed(2);
+
+        rows += `
+          <tr>
+            <td class="border py-2">
+              <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /> ${buy}
+            </td>
+            <td class="border py-2">
+              <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /> ${sell}
+            </td>
+            <td class="border py-2">${karat} قيراط</td>
+          </tr>
+        `;
       }
-    }
 
-    function renderTable() {
-      fetch("https://www.goldapi.io/api/XAU/SAR", {
-        headers: {
-          "x-access-token": "goldapi-jzk9smbg88nt7-io",
-          "Content-Type": "application/json"
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        const pricePerOunce = parseFloat(data.price);
-        const pricePerGram24K = pricePerOunce / 31.1035;
+      pricesTable.innerHTML = rows;
 
-        const karats = {
-          "24": pricePerGram24K,
-          "22": pricePerGram24K * 0.916,
-          "21": pricePerGram24K * 0.875,
-          "18": pricePerGram24K * 0.750,
-        };
+      statusDiv.innerHTML = `
+        <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+        <span class="text-green-600">تم تحميل الأسعار بنجاح</span>
+      `;
+    })
+    .catch(() => {
+      pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
+      statusDiv.innerHTML = `
+        <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+        <span class="text-red-600">تعذر الاتصال بالخادم</span>
+      `;
+    });
+}
 
-        let rows = "";
-        for (const [karat, price] of Object.entries(karats)) {
-          const adjustment = parseFloat(localStorage.getItem(`adj_${karat}`) || "0");
-          const buy = (price + adjustment - 2).toFixed(2);
-          const sell = (price + adjustment + 2).toFixed(2);
+fetchGoldPrice();
+setInterval(fetchGoldPrice, 86400000); // كل 24 ساعة
+</script>
 
-          rows += `
-            <tr>
-              <td class="border py-2">
-                <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${buy}
-              </td>
-              <td class="border py-2">
-                <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${sell}
-              </td>
-              <td class="border py-2">${karat} قيراط</td>
-            </tr>
-          `;
-        }
 
-        document.getElementById("gold-prices").innerHTML = rows;
-      })
-      .catch(() => {
-        document.getElementById("gold-prices").innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل البيانات</td></tr>';
-      });
-    }
-  </script>
+
 </body>
 </html>
