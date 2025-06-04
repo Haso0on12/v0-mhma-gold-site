@@ -81,47 +81,50 @@ function fetchGoldPrice() {
   fetch("https://api.metalpriceapi.com/v1/latest?api_key=01b928f933da5df8aea4fa0eee5054cb&base=USD&currencies=XAU,SAR", requestOptions)
     .then(response => response.json())
     .then(data => {
-      const سعر_الأونصة_بالدولار = 1 / data.rates.XAU;
-      const سعر_الريال = data.rates.SAR;
-      const سعر_الأونصة_بالريال = سعر_الأونصة_بالدولار * سعر_الريال;
+      const pricePerOunceUSD = 1 / data.rates.XAU;
+      const sarRate = data.rates.SAR;
+      const pricePerOunceSAR = pricePerOunceUSD * sarRate;
 
-      if (!سعر_الأونصة_بالريال || isNaN(سعر_الأونصة_بالريال)) throw new Error("خطأ في السعر");
+      if (!pricePerOunceSAR || isNaN(pricePerOunceSAR)) throw new Error("Invalid price");
 
-      const سعر_الغرام_عيار24 = سعر_الأونصة_بالريال / 31.1035;
+      const pricePerGram24K = pricePerOunceSAR / 31.1035;
 
-      const أسعار_الذهب = {
-        "24": سعر_الغرام_عيار24,
-        "22": سعر_الغرام_عيار24 * 0.916,
-        "21": سعر_الغرام_عيار24 * 0.875,
-        "18": سعر_الغرام_عيار24 * 0.750
+      const goldPrices = {
+        "24": pricePerGram24K,
+        "22": pricePerGram24K * 0.916,
+        "21": pricePerGram24K * 0.875,
+        "18": pricePerGram24K * 0.750
       };
 
       let rows = '';
-      for (const [العيار, السعر] of Object.entries(أسعار_الذهب)) {
-        const شراء = (السعر - 2).toFixed(2);
-        const بيع = (السعر + 2).toFixed(2);
 
-        rows += `
-          <tr>
-            <td class="border py-2">
-              <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /> ${شراء}
-            </td>
-            <td class="border py-2">
-              <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /> ${بيع}
-            </td>
-            <td class="border py-2">${العيار} قيراط</td>
-          </tr>
-        `;
-      }
-
+      // ⬅️ صف الأونصة أولاً
       rows += `
         <tr class="bg-gray-50 font-bold">
           <td colspan="2" class="border py-2 text-center">
-            <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${سعر_الأونصة_بالريال.toFixed(2)}
+            <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${pricePerOunceSAR.toFixed(2)}
           </td>
           <td class="border py-2">سعر الأونصة</td>
         </tr>
       `;
+
+      // ⬇️ باقي العيارات
+      for (const [karat, price] of Object.entries(goldPrices)) {
+        const buy = (price - 2).toFixed(2);
+        const sell = (price + 2).toFixed(2);
+
+        rows += `
+          <tr>
+            <td class="border py-2">
+              <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /> ${buy}
+            </td>
+            <td class="border py-2">
+              <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /> ${sell}
+            </td>
+            <td class="border py-2">${karat} قيراط</td>
+          </tr>
+        `;
+      }
 
       pricesTable.innerHTML = rows;
 
@@ -140,10 +143,9 @@ function fetchGoldPrice() {
 }
 
 fetchGoldPrice();
-
-// ⏱ التحديث مرة واحدة كل 24 ساعة
-setInterval(fetchGoldPrice, 86400000);
+setInterval(fetchGoldPrice, 86400000); // كل 24 ساعة
 </script>
+
 
 
 </body>
