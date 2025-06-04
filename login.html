@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - MHMA Control Panel</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-sm">
+    <h2 class="text-xl font-bold text-center mb-4">تسجيل الدخول</h2>
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">اسم المستخدم</label>
+        <input type="text" id="username" required class="mt-1 block w-full border px-3 py-2 rounded"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">كلمة المرور</label>
+        <input type="password" id="password" required class="mt-1 block w-full border px-3 py-2 rounded"/>
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">دخول</button>
+    </form>
+    <p id="errorMsg" class="text-red-600 text-sm mt-2 hidden">بيانات الدخول غير صحيحة</p>
+  </div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const user = document.getElementById('username').value;
+  const pass = document.getElementById('password').value;
+
+  if (user === 'admin' && pass === 'mhma123') {
+    localStorage.setItem('mhma_logged_in', 'true');
+    window.location.href = 'edit.html';
+  } else {
+    document.getElementById('errorMsg').classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>
