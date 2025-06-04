@@ -99,7 +99,8 @@ function fetchGoldPrice() {
 
       if (!goldPriceSAR || isNaN(goldPriceSAR)) throw new Error("Invalid price");
 
-const goldPrice24 = parseFloat(data.price); // السعر الأساسي للـ24 قيراط
+const pricePerGram = (parseFloat(data.price) / 31.1035);
+ // السعر الأساسي للـ24 قيراط
 
 // حساب أسعار العيارات بناءً على النسبة الفعلية
 const goldPrices = {
