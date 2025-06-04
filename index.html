@@ -99,17 +99,20 @@ function fetchGoldPrice() {
 
       if (!goldPriceSAR || isNaN(goldPriceSAR)) throw new Error("Invalid price");
 
+const goldPrice24 = parseFloat(data.price); // السعر الأساسي للـ24 قيراط
+
+// حساب أسعار العيارات بناءً على النسبة الفعلية
 const goldPrices = {
-  "24": data.price,
-  "22": data.price - 7,
-  "21": data.price - 10,
-  "18": data.price - 18
+  "24": goldPrice24,
+  "22": goldPrice24 * 0.916,
+  "21": goldPrice24 * 0.875,
+  "18": goldPrice24 * 0.750
 };
 
 let rows = '';
 for (const [karat, price] of Object.entries(goldPrices)) {
-  const buy = (price - 2).toFixed(2);
-  const sell = (price + 2).toFixed(2);
+  const buy = (price - 2).toFixed(2);  // فرق بسيط للشراء
+  const sell = (price + 2).toFixed(2); // فرق بسيط للبيع
 
   rows += `
     <tr>
