@@ -113,13 +113,17 @@ function fetchGoldPrice() {
         const buy = (price - 2).toFixed(2);  // فرق شراء
         const sell = (price + 2).toFixed(2); // فرق بيع
 
-        rows += `
-          <tr>
-              <td class="border py-2">${buy} <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /></td>
-            <td class="border py-2">${sell} <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /></td>
-            <td class="border py-2">${karat} قيراط</td>
-          </tr>
-        `;
+   rows += `
+  <tr>
+    <td class="border py-2">
+      <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${buy}
+    </td>
+    <td class="border py-2">
+      <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 mr-1" /> ${sell}
+    </td>
+    <td class="border py-2">${karat} قيراط</td>
+  </tr>
+`;
       }
 
       pricesTable.innerHTML = rows;
