@@ -76,7 +76,7 @@ function fetchGoldPrice() {
     <span class="text-yellow-600">جارٍ التحميل...</span>
   `;
 
-  fetch("https://api.metalpriceapi.com/v1/latest?api_key=01b928f933da5df8aea4fa0eee5054cb&base=USD&currencies=XAU,SAR", requestOptions)
+  fetch("https://api.metalpriceapi.com/v1/latest?api_key=6ba13cc3be0dd36a954d8041d82b71ae&base=USD&currencies=XAU,SAR", requestOptions)
     .then(response => response.json())
     .then(data => {
       console.log(data); // لمراقبة المخرجات
