@@ -99,23 +99,30 @@ function fetchGoldPrice() {
       let rows = '';
 
       // ⬅️ صف الأونصة أولاً
-    rows += `
+ const ozBuyAdj = parseFloat(localStorage.getItem('adj_oz_buy') || "0");
+const ozSellAdj = parseFloat(localStorage.getItem('adj_oz_sell') || "0");
+
+rows += `
   <tr class="bg-gray-50 font-bold">
     <td class="border py-2">
-      <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR - 5).toFixed(2)}
+      <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR + ozBuyAdj).toFixed(2)}
     </td>
     <td class="border py-2">
-      <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR + 5).toFixed(2)}
+      <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR + ozSellAdj).toFixed(2)}
     </td>
     <td class="border py-2">أونصة</td>
   </tr>
 `;
 
 
+
       // ⬇️ باقي العيارات
       for (const [karat, price] of Object.entries(goldPrices)) {
-        const buy = (price - 2).toFixed(2);
-        const sell = (price + 2).toFixed(2);
+       const buyAdj = parseFloat(localStorage.getItem(`adj_${karat}_buy`) || "0");
+const sellAdj = parseFloat(localStorage.getItem(`adj_${karat}_sell`) || "0");
+const buy = (price + buyAdj).toFixed(2);
+const sell = (price + sellAdj).toFixed(2);
+
 
         rows += `
           <tr>
