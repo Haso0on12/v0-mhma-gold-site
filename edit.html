@@ -14,34 +14,50 @@
   </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
-  <div class="bg-white shadow-xl rounded-xl w-full max-w-2xl p-6">
+  <div class="bg-white shadow-xl rounded-xl w-full max-w-4xl p-6">
     <div class="flex justify-center mb-6">
       <img src="logo.png" alt="MHMA Logo" class="w-20 h-20 object-contain">
     </div>
     <h2 class="text-center text-2xl font-bold text-blue-800 mb-6">تعديل زيادات الأسعار</h2>
 
     <form onsubmit="saveAdjustments(); return false;">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block font-medium mb-1" for="adj_oz">أونصة</label>
-          <input type="number" id="adj_oz" class="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label class="block font-medium mb-1" for="adj_24">24 قيراط</label>
-          <input type="number" id="adj_24" class="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label class="block font-medium mb-1" for="adj_22">22 قيراط</label>
-          <input type="number" id="adj_22" class="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label class="block font-medium mb-1" for="adj_21">21 قيراط</label>
-          <input type="number" id="adj_21" class="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label class="block font-medium mb-1" for="adj_18">18 قيراط</label>
-          <input type="number" id="adj_18" class="w-full border rounded px-3 py-2" />
-        </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full border text-center">
+          <thead class="bg-blue-100">
+            <tr>
+              <th class="py-2 px-4 border">العيار</th>
+              <th class="py-2 px-4 border">زيادة الشراء (ريال)</th>
+              <th class="py-2 px-4 border">زيادة البيع (ريال)</th>
+            </tr>
+          </thead>
+          <tbody class="text-lg">
+            <tr>
+              <td class="py-2 px-4 border font-semibold">أونصة</td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_oz_buy" class="w-24 border rounded px-2 py-1 text-right" /></td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_oz_sell" class="w-24 border rounded px-2 py-1 text-right" /></td>
+            </tr>
+            <tr>
+              <td class="py-2 px-4 border font-semibold">24 قيراط</td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_24_buy" class="w-24 border rounded px-2 py-1 text-right" /></td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_24_sell" class="w-24 border rounded px-2 py-1 text-right" /></td>
+            </tr>
+            <tr>
+              <td class="py-2 px-4 border font-semibold">22 قيراط</td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_22_buy" class="w-24 border rounded px-2 py-1 text-right" /></td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_22_sell" class="w-24 border rounded px-2 py-1 text-right" /></td>
+            </tr>
+            <tr>
+              <td class="py-2 px-4 border font-semibold">21 قيراط</td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_21_buy" class="w-24 border rounded px-2 py-1 text-right" /></td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_21_sell" class="w-24 border rounded px-2 py-1 text-right" /></td>
+            </tr>
+            <tr>
+              <td class="py-2 px-4 border font-semibold">18 قيراط</td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_18_buy" class="w-24 border rounded px-2 py-1 text-right" /></td>
+              <td class="py-2 px-4 border"><input type="number" id="adj_18_sell" class="w-24 border rounded px-2 py-1 text-right" /></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <div class="text-center mt-6">
         <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">حفظ التعديلات</button>
@@ -58,16 +74,18 @@ function checkLogin() {
 
 function saveAdjustments() {
   ['oz', '24', '22', '21', '18'].forEach(k => {
-    const value = parseFloat(document.getElementById('adj_' + k).value) || 0;
-    localStorage.setItem('adj_' + k, value);
+    const buy = parseFloat(document.getElementById('adj_' + k + '_buy').value) || 0;
+    const sell = parseFloat(document.getElementById('adj_' + k + '_sell').value) || 0;
+    localStorage.setItem('adj_' + k + '_buy', buy);
+    localStorage.setItem('adj_' + k + '_sell', sell);
   });
   alert("✅ تم حفظ التعديلات بنجاح");
 }
 
 function loadAdjustments() {
   ['oz', '24', '22', '21', '18'].forEach(k => {
-    const val = localStorage.getItem('adj_' + k) || "0";
-    document.getElementById('adj_' + k).value = val;
+    document.getElementById('adj_' + k + '_buy').value = localStorage.getItem('adj_' + k + '_buy') || "0";
+    document.getElementById('adj_' + k + '_sell').value = localStorage.getItem('adj_' + k + '_sell') || "0";
   });
 }
 
