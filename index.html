@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -28,7 +29,7 @@
 
       <div id="connection-status" class="flex justify-center items-center gap-2 mb-4 text-lg font-semibold">
         <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
-        <span class="text-yellow-600">... جارٍ التحميل</span>
+        <span class="text-yellow-600">...جارٍ التحميل</span>
       </div>
 
       <table class="min-w-full bg-white border border-gray-200 text-center">
@@ -40,12 +41,12 @@
           </tr>
         </thead>
         <tbody id="gold-prices" class="text-lg">
-          <tr><td colspan="3" class="py-4">Loading ...</td></tr>
+          <tr><td colspan="3" class="py-4">Loading...</td></tr>
         </tbody>
       </table>
 
       <p class="text-sm mt-2 text-gray-600 text-center">
-        الأسعار مبنية على قيم الـ API: الأونصة بخيارات الشراء/البيع (SAR)، ونشتقّ للجرام بحسب العيار.
+        الأونصة بالـ USD، والجرام بالـ SAR (نشتقّ منه أسعار شراء/بيع بحسب العيار).
       </p>
     </div>
   </main>
@@ -71,46 +72,54 @@
 
     // مفتاح GoldAPI الخاص بك
     const GOLDAPI_KEY = "goldapi-jzk9smbg824oq-io";
-    // نستخدم endpoint لجلب الأسعار بالـ SAR مباشرةً
-    const GOLDAPI_URL = "https://www.goldapi.io/api/XAU/SAR";
+    // endpoints لجلب الأسعار
+    const GOLDAPI_URL_USD = "https://www.goldapi.io/api/XAU/USD"; // للحصول على bid/ask للأونصة بالدولار
+    const GOLDAPI_URL_SAR = "https://www.goldapi.io/api/XAU/SAR"; // للحصول على بيانات الجرام بالريال
 
     async function fetchGoldPrice() {
-      // عرض حالة التحميل
       statusDiv.innerHTML = `
         <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
         <span class="text-yellow-600">جارٍ التحميل...</span>
       `;
 
       try {
-        // نرسل الطلب إلى GoldAPI
-        const response = await fetch(GOLDAPI_URL, {
+        // 1) جلب بيانات الأونصة بالدولار
+        const respUSD = await fetch(GOLDAPI_URL_USD, {
           method: "GET",
           headers: {
             "x-access-token": GOLDAPI_KEY,
             "Content-Type": "application/json"
           }
         });
-        const data = await response.json();
+        const dataUSD = await respUSD.json();
 
-        // 1. قراءة bid و ask للأونصة بالـ SAR
-        let bidOunce = data.bid !== undefined ? parseFloat(data.bid) : null;
-        let askOunce = data.ask !== undefined ? parseFloat(data.ask) : null;
-        if (bidOunce === null || askOunce === null) {
-          // إذا لم يكن هناك bid/ask، نأخذ السعر الوسطي
-          const midOunce = data.price !== undefined 
-            ? parseFloat(data.price) 
-            : parseFloat(data.xau_price || 0);
-          bidOunce = midOunce;
-          askOunce = midOunce;
+        let bidOunceUSD = dataUSD.bid !== undefined ? parseFloat(dataUSD.bid) : null;
+        let askOunceUSD = dataUSD.ask !== undefined ? parseFloat(dataUSD.ask) : null;
+        if (bidOunceUSD === null || askOunceUSD === null) {
+          const midUSD = dataUSD.price !== undefined 
+            ? parseFloat(dataUSD.price) 
+            : parseFloat(dataUSD.xau_price || 0);
+          bidOunceUSD = midUSD;
+          askOunceUSD = midUSD;
         }
 
-        // 2. قراءة أسعار الغرام الوسطي من الحقول المباشرة بالـ SAR
-        const midGram24k = parseFloat(data.price_gram_24k  || 0);
-        const midGram22k = parseFloat(data.price_gram_22k  || 0);
-        const midGram21k = parseFloat(data.price_gram_21k  || 0);
-        const midGram18k = parseFloat(data.price_gram_18k  || 0);
+        // 2) جلب بيانات الجرام بالريال
+        const respSAR = await fetch(GOLDAPI_URL_SAR, {
+          method: "GET",
+          headers: {
+            "x-access-token": GOLDAPI_KEY,
+            "Content-Type": "application/json"
+          }
+        });
+        const dataSAR = await respSAR.json();
 
-        // 3. قراءة أيّ تعديلات مخزّنة (adjustments) من localStorage (إن وُجدت)
+        // أسعار الجرام الوسطي لكل عيار بالـ SAR
+        const midGram24k = parseFloat(dataSAR.price_gram_24k  || 0);
+        const midGram22k = parseFloat(dataSAR.price_gram_22k  || 0);
+        const midGram21k = parseFloat(dataSAR.price_gram_21k  || 0);
+        const midGram18k = parseFloat(dataSAR.price_gram_18k  || 0);
+
+        // 3) قراءة التعديلات من localStorage إن وُجدت
         const adjOunceBuy  = parseFloat(localStorage.getItem('adj_oz_buy')  || 0);
         const adjOunceSell = parseFloat(localStorage.getItem('adj_oz_sell') || 0);
 
@@ -126,20 +135,25 @@
         const adj18Buy = parseFloat(localStorage.getItem('adj_18_buy')  || 0);
         const adj18Sell= parseFloat(localStorage.getItem('adj_18_sell') || 0);
 
-        // 4. حساب الأسعار النهائية للأونصة (bid/ask)
-        const finalBidOunce = (bidOunce + adjOunceBuy).toFixed(2);
-        const finalAskOunce = (askOunce + adjOunceSell).toFixed(2);
+        // 4) حساب الأسعار النهائية للأونصة بالـ USD
+        const finalBidOunceUSD = (bidOunceUSD + adjOunceBuy).toFixed(2);
+        const finalAskOunceUSD = (askOunceUSD + adjOunceSell).toFixed(2);
 
-        // 5. حساب spread (فرق الأونصة) واشتقاقه للجرام
-        const spreadOunceSAR = askOunce - bidOunce;
+        // 5) حساب Spread الأونصة بالريال من بيانات SAR
+        let bidOunceSAR = dataSAR.bid !== undefined ? parseFloat(dataSAR.bid) : null;
+        let askOunceSAR = dataSAR.ask !== undefined ? parseFloat(dataSAR.ask) : null;
+        if (bidOunceSAR === null || askOunceSAR === null) {
+          const midSAR = dataSAR.price !== undefined 
+            ? parseFloat(dataSAR.price) 
+            : parseFloat(dataSAR.xau_price || 0);
+          bidOunceSAR = midSAR;
+          askOunceSAR = midSAR;
+        }
+        const spreadOunceSAR = askOunceSAR - bidOunceSAR;
         const GRAMS_PER_OUNCE = 31.1035;
         const spreadPerGram = spreadOunceSAR / GRAMS_PER_OUNCE;
 
-        // 6. لكل عيار، نحسب spreadGramNk = spreadPerGram * (Nk/24)
-        //    ثم:
-        //    bidGramNk = midGramNk - spreadGramNk + adjNkBuy
-        //    askGramNk = midGramNk + spreadGramNk + adjNkSell
-
+        // 6) حساب أسعار شراء/بيع للجرام لكل عيار بالـ SAR
         // 24 عيار
         const spreadGram24 = spreadPerGram * (24 / 24);
         const bidGram24 = (midGram24k - spreadGram24 + adj24Buy).toFixed(2);
@@ -160,23 +174,23 @@
         const bidGram18 = (midGram18k - spreadGram18 + adj18Buy).toFixed(2);
         const askGram18 = (midGram18k + spreadGram18 + adj18Sell).toFixed(2);
 
-        // 7. بناء صفوف الجدول
+        // 7) بناء صفوف الجدول
         let rows = "";
 
-        // صف الأونصة
+        // صف الأونصة (USD)
         rows += `
           <tr class="bg-gray-50 font-bold">
             <td class="border py-2">
-              <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${ finalBidOunce }
+              $ ${ finalBidOunceUSD }
             </td>
             <td class="border py-2">
-              <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${ finalAskOunce }
+              $ ${ finalAskOunceUSD }
             </td>
             <td class="border py-2">أونصة</td>
           </tr>
         `;
 
-        // صف 24 عيار (جرام)
+        // صف 24 عيار (جرام، SAR)
         rows += `
           <tr>
             <td class="border py-2">
@@ -189,7 +203,7 @@
           </tr>
         `;
 
-        // صف 22 عيار (جرام)
+        // صف 22 عيار (جرام، SAR)
         rows += `
           <tr>
             <td class="border py-2">
@@ -202,7 +216,7 @@
           </tr>
         `;
 
-        // صف 21 عيار (جرام)
+        // صف 21 عيار (جرام، SAR)
         rows += `
           <tr>
             <td class="border py-2">
@@ -215,7 +229,7 @@
           </tr>
         `;
 
-        // صف 18 عيار (جرام)
+        // صف 18 عيار (جرام، SAR)
         rows += `
           <tr>
             <td class="border py-2">
@@ -228,10 +242,10 @@
           </tr>
         `;
 
-        // 8. تعبئة tbody بالصفوف
+        // 8) تعبئة tbody بالصفوف
         pricesTable.innerHTML = rows;
 
-        // حالة "تم التحميل"
+        // تحديث حالة "تم التحميل"
         statusDiv.innerHTML = `
           <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
           <span class="text-green-600">تم تحميل الأسعار</span>
@@ -254,3 +268,4 @@
 
 </body>
 </html>
+```
