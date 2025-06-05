@@ -21,50 +21,25 @@
       <div class="bg-gray-50 p-4 rounded">
         <h3 class="font-semibold mb-2 text-blue-600">أونصة</h3>
         <div class="flex justify-between items-center mb-2">
-          <label for="adj_oz_buy">عمود الشراء:</label>
+          <label for="adj_oz_buy">زيادة الشراء:</label>
           <input type="number" id="adj_oz_buy" class="border px-2 py-1 w-24 text-right" />
         </div>
         <div class="flex justify-between items-center">
-          <label for="adj_oz_sell">عمود البيع:</label>
+          <label for="adj_oz_sell">زيادة البيع:</label>
           <input type="number" id="adj_oz_sell" class="border px-2 py-1 w-24 text-right" />
         </div>
       </div>
 
-      <!-- 24 قيراط -->
+      <!-- العيارات -->
+      ${["24", "22", "21", "18"].map(karat => `
       <div class="bg-gray-50 p-4 rounded">
-        <h3 class="font-semibold mb-2 text-blue-600">عيار 24 قيراط</h3>
+        <h3 class="font-semibold mb-2 text-blue-600">عيار ${karat} قيراط</h3>
         <div class="flex justify-between items-center">
-          <label for="adj_24">الزيادة العامة:</label>
-          <input type="number" id="adj_24" class="border px-2 py-1 w-24 text-right" />
+          <label for="adj_${karat}">الزيادة العامة:</label>
+          <input type="number" id="adj_${karat}" class="border px-2 py-1 w-24 text-right" />
         </div>
       </div>
-
-      <!-- 22 قيراط -->
-      <div class="bg-gray-50 p-4 rounded">
-        <h3 class="font-semibold mb-2 text-blue-600">عيار 22 قيراط</h3>
-        <div class="flex justify-between items-center">
-          <label for="adj_22">الزيادة العامة:</label>
-          <input type="number" id="adj_22" class="border px-2 py-1 w-24 text-right" />
-        </div>
-      </div>
-
-      <!-- 21 قيراط -->
-      <div class="bg-gray-50 p-4 rounded">
-        <h3 class="font-semibold mb-2 text-blue-600">عيار 21 قيراط</h3>
-        <div class="flex justify-between items-center">
-          <label for="adj_21">الزيادة العامة:</label>
-          <input type="number" id="adj_21" class="border px-2 py-1 w-24 text-right" />
-        </div>
-      </div>
-
-      <!-- 18 قيراط -->
-      <div class="bg-gray-50 p-4 rounded">
-        <h3 class="font-semibold mb-2 text-blue-600">عيار 18 قيراط</h3>
-        <div class="flex justify-between items-center">
-          <label for="adj_18">الزيادة العامة:</label>
-          <input type="number" id="adj_18" class="border px-2 py-1 w-24 text-right" />
-        </div>
-      </div>
+      `).join("")}
 
       <button onclick="saveAdjustments()" class="bg-green-600 text-white px-6 py-2 rounded w-full mt-4 hover:bg-green-700">💾 حفظ التعديلات</button>
     </div>
