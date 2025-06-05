@@ -79,9 +79,11 @@ function fetchGoldPrice() {
   fetch("https://api.metalpriceapi.com/v1/latest?api_key=01b928f933da5df8aea4fa0eee5054cb&base=USD&currencies=XAU,SAR", requestOptions)
     .then(response => response.json())
     .then(data => {
+      console.log(data); // لمراقبة المخرجات
+
       const pricePerOunceUSD = 1 / data.rates.XAU;
       const sarRate = data.rates.SAR;
-const pricePerOunceUSD_fixed = pricePerOunceUSD.toFixed(2);
+      const pricePerOunceSAR = pricePerOunceUSD * sarRate;
 
       if (!pricePerOunceSAR || isNaN(pricePerOunceSAR)) throw new Error("Invalid price");
 
@@ -96,56 +98,46 @@ const pricePerOunceUSD_fixed = pricePerOunceUSD.toFixed(2);
 
       let rows = '';
 
-      // ✅ adjustments from localStorage
-      const ozBuyAdj = parseFloat(localStorage.getItem('adj_oz_buy') || "0");
-      const ozSellAdj = parseFloat(localStorage.getItem('adj_oz_sell') || "0");
-
-      // ⬅️ أونصة أولاً
+      // ✅ أونصة بالدولار فقط
       rows += `
-    rows += `
-  <tr class="bg-gray-50 font-bold">
-    <td class="border py-2">
-      <img src="https://img.icons8.com/?size=512&id=15541&format=png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceUSD - 5).toFixed(2)}
-    </td>
-    <td class="border py-2">
-      <img src="https://img.icons8.com/?size=512&id=15541&format=png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceUSD + 5).toFixed(2)}
-    </td>
-    <td class="border py-2">أونصة (بالدولار)</td>
-  </tr>
-`;
+        <tr class="bg-gray-50 font-bold">
+          <td class="border py-2">$ ${(pricePerOunceUSD - 5).toFixed(2)}</td>
+          <td class="border py-2">$ ${(pricePerOunceUSD + 5).toFixed(2)}</td>
+          <td class="border py-2">أونصة</td>
+        </tr>
+      `;
 
-
-      // ⬇️ باقي العيارات
+      // ✅ باقي العيارات بالريال
       for (const [karat, price] of Object.entries(goldPrices)) {
-        const adj = parseFloat(localStorage.getItem(`adj_${karat}`) || "0");
-        const buy = (price + adj - 2).toFixed(2);
-        const sell = (price + adj + 2).toFixed(2);
+        const adjustment = parseFloat(localStorage.getItem(`adj_${karat}`) || "0");
+        const buy = (price + adjustment - 2).toFixed(2);
+        const sell = (price + adjustment + 2).toFixed(2);
 
         rows += `
           <tr>
             <td class="border py-2">
-              <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${buy}
+              <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /> ${buy}
             </td>
             <td class="border py-2">
-              <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${sell}
+              <img src="Saudi_Riyal_Symbol.svg.png" alt="SAR" class="inline w-4 h-4 ml-1" /> ${sell}
             </td>
-            <td class="border py-2">${karat} عيار</td>
+            <td class="border py-2">${karat} قيراط</td>
           </tr>
         `;
       }
 
       pricesTable.innerHTML = rows;
-
       statusDiv.innerHTML = `
         <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
-        <span class="text-green-600">تم تحميل الأسعار بنجاح</span>
+        <span class="text-green-600">تم تحميل الأسعار</span>
       `;
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error("Error fetching prices:", err);
       pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
       statusDiv.innerHTML = `
         <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
-        <span class="text-red-600">تعذر الاتصال بالخادم</span>
+        <span class="text-red-600">تعذر الاتصال</span>
       `;
     });
 }
