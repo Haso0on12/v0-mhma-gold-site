@@ -81,7 +81,7 @@ function fetchGoldPrice() {
     .then(data => {
       const pricePerOunceUSD = 1 / data.rates.XAU;
       const sarRate = data.rates.SAR;
-      const pricePerOunceSAR = pricePerOunceUSD * sarRate;
+const pricePerOunceUSD_fixed = pricePerOunceUSD.toFixed(2);
 
       if (!pricePerOunceSAR || isNaN(pricePerOunceSAR)) throw new Error("Invalid price");
 
@@ -102,16 +102,18 @@ function fetchGoldPrice() {
 
       // ⬅️ أونصة أولاً
       rows += `
-        <tr class="bg-gray-50 font-bold">
-          <td class="border py-2">
-            <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR + ozBuyAdj).toFixed(2)}
-          </td>
-          <td class="border py-2">
-            <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceSAR + ozSellAdj).toFixed(2)}
-          </td>
-          <td class="border py-2">أونصة</td>
-        </tr>
-      `;
+    rows += `
+  <tr class="bg-gray-50 font-bold">
+    <td class="border py-2">
+      <img src="https://img.icons8.com/?size=512&id=15541&format=png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceUSD - 5).toFixed(2)}
+    </td>
+    <td class="border py-2">
+      <img src="https://img.icons8.com/?size=512&id=15541&format=png" class="inline w-4 h-4 ml-1" /> ${(pricePerOunceUSD + 5).toFixed(2)}
+    </td>
+    <td class="border py-2">أونصة (بالدولار)</td>
+  </tr>
+`;
+
 
       // ⬇️ باقي العيارات
       for (const [karat, price] of Object.entries(goldPrices)) {
