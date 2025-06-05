@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MHMA - Live Gold Prices</title>
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- خط القاهرة -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -14,129 +16,204 @@
 </head>
 <body class="bg-white text-gray-900">
 
-<header class="bg-blue-50 text-white px-4 relative flex items-center justify-between" style="height: 200px;">
-  <img src="logo.png" alt="MHMA Logo"
-       class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
-       style="height: 200px; max-width: none;" />
-</header>
+  <header class="bg-blue-50 text-white px-4 relative flex items-center justify-between" style="height: 200px;">
+    <img src="logo.png" alt="MHMA Logo"
+         class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+         style="height: 200px; max-width: none;" />
+  </header>
 
-<main class="p-6 flex justify-center">
-  <div class="w-full max-w-2xl">
-    <h2 class="text-xl font-semibold mb-2 text-center">أسعار الذهب (مباشرة)</h2>
+  <main class="p-6 flex justify-center">
+    <div class="w-full max-w-2xl">
+      <h2 class="text-xl font-semibold mb-2 text-center">أسعار الذهب (مباشرة)</h2>
 
-    <div id="connection-status" class="flex justify-center items-center gap-2 mb-4 text-lg font-semibold">
-      <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
-      <span class="text-yellow-600">...جارٍ التحميل</span>
+      <div id="connection-status" class="flex justify-center items-center gap-2 mb-4 text-lg font-semibold">
+        <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
+        <span class="text-yellow-600">...جارٍ التحميل</span>
+      </div>
+
+      <table class="min-w-full bg-white border border-gray-200 text-center">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="py-2 px-4 border">الشراء</th>
+            <th class="py-2 px-4 border">البيع</th>
+            <th class="py-2 px-4 border">العيار</th>
+          </tr>
+        </thead>
+        <tbody id="gold-prices" class="text-lg">
+          <tr><td colspan="3" class="py-4">Loading...</td></tr>
+        </tbody>
+      </table>
+
+      <p class="text-sm mt-2 text-gray-600 text-center">Prices are in Saudi Riyals (SAR)</p>
     </div>
+  </main>
 
-    <table class="min-w-full bg-white border border-gray-200 text-center">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="py-2 px-4 border">الشراء</th>
-          <th class="py-2 px-4 border">البيع</th>
-          <th class="py-2 px-4 border">العيار</th>
-        </tr>
-      </thead>
-      <tbody id="gold-prices" class="text-lg">
-        <tr><td colspan="3" class="py-4">Loading...</td></tr>
-      </tbody>
-    </table>
+  <footer class="bg-blue-50 text-center text-sm p-4 mt-6">
+    <p> Contact: mhma-alarbash@outlook.com  |  Phone: 0530091668 , 0138997999  |  Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3 </p>
+    <div class="fixed bottom-4 left-4 flex flex-col items-center gap-2">
+      <a href="https://www.instagram.com/mhma_alarbash?igsh=cjgwdmR3Y29wMzU=" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" alt="Instagram" class="w-6 h-6" />
+      </a>
+      <a href="https://wa.me/966530091668" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp" class="w-6 h-6" />
+      </a>
+      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Map" class="w-6 h-6" />
+      </a>
+    </div>
+  </footer>
 
-    <p class="text-sm mt-2 text-gray-600 text-center">Prices are in Saudi Riyals (SAR)</p>
-  </div>
-</main>
+  <script>
+    const statusDiv = document.getElementById('connection-status');
+    const pricesTable = document.getElementById('gold-prices');
 
-<footer class="bg-blue-50 text-center text-sm p-4 mt-6">
-  <p> Contact: mhma-alarbash@outlook.com  |  Phone: 0530091668 , 0138997999  |  Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3 </p>
-  <div class="fixed bottom-4 left-4 flex flex-col items-center gap-2">
-    <a href="https://www.instagram.com/mhma_alarbash?igsh=cjgwdmR3Y29wMzU=" target="_blank">
-      <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" alt="Instagram" class="w-6 h-6" />
-    </a>
-    <a href="https://wa.me/966530091668" target="_blank">
-      <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp" class="w-6 h-6" />
-    </a>
-    <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank">
-      <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Map" class="w-6 h-6" />
-    </a>
-  </div>
-</footer>
+    // مفتاح GoldAPI الخاص بك (استبدله بمفتاحك الحقيقي)
+    const GOLDAPI_KEY = "goldapi-jzk9smbg824oq-io"; 
 
-<script>
-const statusDiv = document.getElementById('connection-status');
-const pricesTable = document.getElementById('gold-prices');
+    // نهاية جلب سعر الذهب (أونصة XAU مقابل USD)
+    const GOLDAPI_URL = "https://www.goldapi.io/api/XAU/USD";
 
-const requestOptions = {
-  method: 'GET',
-  redirect: 'follow'
-};
+    // نهاية جلب سعر الصرف USD → SAR عبر exchangerate.host
+    const EXCHANGE_API_URL = "https://api.exchangerate.host/latest?base=USD&symbols=SAR";
 
-function fetchGoldPrice() {
-  statusDiv.innerHTML = `
-    <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
-    <span class="text-yellow-600">جارٍ التحميل...</span>
-  `;
-
-  fetch("https://www.goldapi.io/api/XAU/USD", {
-    method: "GET",
-    headers: {
-      "x-access-token": "goldapi-jzk9smbg824oq-io",  // 🔁 غيّره بمفتاحك
-      "Content-Type": "application/json"
+    /**
+     * دالة لجلب سعر الصرف USD → SAR
+     * وتعطي قيمة عدد الريالات لكل دولار
+     */
+    async function fetchUsdToSarRate() {
+      try {
+        const resp = await fetch(EXCHANGE_API_URL);
+        const json = await resp.json();
+        // json.rates.SAR مثلاً 3.75 أو القيمة المحدثة
+        return parseFloat(json.rates.SAR);
+      } catch (err) {
+        console.error("خطأ في جلب سعر الصرف:", err);
+        // في حال الخطأ، نرجع قيمة افتراضية (مثلاً 3.75)
+        return 3.75;
+      }
     }
-  })
-  .then(response => response.json())
-  .then(data => {
-    const pricePerOunceUSD = parseFloat(data.price);
-    const pricePerGram24K = pricePerOunceUSD / 31.1035;
 
-    const goldPrices = {
-      "24": pricePerGram24K,
-      "22": pricePerGram24K * 0.916,
-      "21": pricePerGram24K * 0.875,
-      "18": pricePerGram24K * 0.750
-    };
+    /**
+     * دالة لجلب سعر أونصة الذهب بالدولار (XAU → USD)
+     */
+    async function fetchGoldOunceUsd() {
+      const response = await fetch(GOLDAPI_URL, {
+        method: "GET",
+        headers: {
+          "x-access-token": GOLDAPI_KEY,
+          "Content-Type": "application/json"
+        }
+      });
+      const data = await response.json();
+      // البيانات تأتي بحقل data.price أو data.xau_price حسب النسخة
+      // نستخدم الأولوية لـ data.price، وإذا لم توجد نستعمل data.xau_price
+      const priceField = data.price !== undefined ? data.price : data.xau_price;
+      return parseFloat(priceField);
+    }
 
-    let rows = `
-      <tr class="bg-gray-50 font-bold">
-        <td class="border py-2">$${(pricePerOunceUSD + parseFloat(localStorage.getItem('adj_oz_buy') || 0)).toFixed(2)}</td>
-        <td class="border py-2">$${(pricePerOunceUSD + parseFloat(localStorage.getItem('adj_oz_sell') || 0)).toFixed(2)}</td>
-        <td class="border py-2">أونصة</td>
-      </tr>
-    `;
-
-    for (const [karat, price] of Object.entries(goldPrices)) {
-      const buyAdjustment = parseFloat(localStorage.getItem(`adj_${karat}_buy`) || 0);
-      const sellAdjustment = parseFloat(localStorage.getItem(`adj_${karat}_sell`) || 0);
-      const buy = (price + buyAdjustment).toFixed(2);
-      const sell = (price + sellAdjustment).toFixed(2);
-
-      rows += `
-        <tr>
-          <td class="border py-2"><img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${buy}</td>
-          <td class="border py-2"><img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${sell}</td>
-          <td class="border py-2">${karat} قيراط</td>
-        </tr>
+    async function fetchGoldPrice() {
+      // عرض حالة التحميل
+      statusDiv.innerHTML = `
+        <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
+        <span class="text-yellow-600">جارٍ التحميل...</span>
       `;
+
+      try {
+        // نجلب سعر الأونصة بالدولار
+        const pricePerOunceUSD = await fetchGoldOunceUsd();
+
+        // نجلب سعر الصرف USD → SAR
+        const usdToSarRate = await fetchUsdToSarRate();
+
+        // نحسب سعر الأونصة بالريال السعودي
+        const pricePerOunceSAR = pricePerOunceUSD * usdToSarRate;
+
+        // نحسب سعر جرام واحد من الذهب خالص (24K) بالريال
+        // نستخدم 31.1035 غرام للأونصة التروي
+        const GRAMS_PER_OUNCE = 31.1035;
+        const pricePerGram24K_SAR = pricePerOunceSAR / GRAMS_PER_OUNCE;
+
+        // نحسب أسعار العيارات المختلفة بالدقة (karat/24)
+        const purityRatios = {
+          "24": 24 / 24,    // 1.0000
+          "22": 22 / 24,    // ≈0.9167
+          "21": 21 / 24,    // 0.8750
+          "18": 18 / 24     // 0.7500
+        };
+
+        // ننشئ كائن يحوي سعر جرام لكل عيار بدون التعديلات (التعديلات نقرأها من localStorage)
+        const goldPrices = {};
+        for (const karat in purityRatios) {
+          goldPrices[karat] = pricePerGram24K_SAR * purityRatios[karat];
+        }
+
+        // بناء صف الأونصة أولاً
+        // نقرأ أي تعديلات (adjustments) مخزنة في localStorage خاصة بالأونصة
+        const adjOunceBuy = parseFloat(localStorage.getItem('adj_oz_buy') || 0);
+        const adjOunceSell = parseFloat(localStorage.getItem('adj_oz_sell') || 0);
+
+        // نطبق التعديل ثم نجمع مع السعر المحسوب
+        const buyOunceFinal = (pricePerOunceSAR + adjOunceBuy).toFixed(2);
+        const sellOunceFinal = (pricePerOunceSAR + adjOunceSell).toFixed(2);
+
+        let rows = `
+          <tr class="bg-gray-50 font-bold">
+            <td class="border py-2">
+              <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${buyOunceFinal}
+            </td>
+            <td class="border py-2">
+              <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${sellOunceFinal}
+            </td>
+            <td class="border py-2">أونصة</td>
+          </tr>
+        `;
+
+        // بناء صفوف العيارات الأخرى
+        for (const [karat, basePrice] of Object.entries(goldPrices)) {
+          // نقرأ التعديلات الخاصة بكل عيار من localStorage
+          const buyAdj = parseFloat(localStorage.getItem(`adj_${karat}_buy`) || 0);
+          const sellAdj = parseFloat(localStorage.getItem(`adj_${karat}_sell`) || 0);
+
+          // السعر النهائي للشراء والبيع
+          const buyPrice = (basePrice + buyAdj).toFixed(2);
+          const sellPrice = (basePrice + sellAdj).toFixed(2);
+
+          rows += `
+            <tr>
+              <td class="border py-2">
+                <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${buyPrice}
+              </td>
+              <td class="border py-2">
+                <img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ${sellPrice}
+              </td>
+              <td class="border py-2">${karat} قيراط</td>
+            </tr>
+          `;
+        }
+
+        // نعبّئ الجدول بالمحتوى الجديد
+        pricesTable.innerHTML = rows;
+
+        // نحدث حالة الاتصال إلى "نجح التحميل"
+        statusDiv.innerHTML = `
+          <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+          <span class="text-green-600">تم تحميل الأسعار</span>
+        `;
+      } catch (error) {
+        console.error("خطأ في جلب البيانات:", error);
+        pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
+        statusDiv.innerHTML = `
+          <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+          <span class="text-red-600">تعذر الاتصال</span>
+        `;
+      }
     }
 
-    pricesTable.innerHTML = rows;
-    statusDiv.innerHTML = `
-      <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
-      <span class="text-green-600">تم تحميل الأسعار</span>
-    `;
-  })
-  .catch(() => {
-    pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
-    statusDiv.innerHTML = `
-      <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
-      <span class="text-red-600">تعذر الاتصال</span>
-    `;
-  });
-}
-
-
-fetchGoldPrice();
-setInterval(fetchGoldPrice, 86400000); // تحديث كل يوم
-</script>
+    // نستدعي جلب الأسعار فورًا عند تحميل الصفحة
+    fetchGoldPrice();
+    // ونجدّد كل 24 ساعة (86,400,000 ملي-ثانية)
+    setInterval(fetchGoldPrice, 2000);
+  </script>
 
 </body>
 </html>
