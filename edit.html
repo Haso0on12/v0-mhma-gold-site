@@ -3,65 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تعديل أسعار الذهب - MHMA</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <title>تعديل الأسعار | MHMA</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Cairo', sans-serif;
+      background: linear-gradient(to right, #f0f4f8, #d9e2ec);
     }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
-  <div class="max-w-xl mx-auto bg-white rounded-lg shadow-md p-6">
-    <img src="logo.png" class="h-24 mx-auto mb-4" alt="MHMA Logo">
-    <h2 class="text-2xl font-bold text-center text-blue-700 mb-6">تعديل الأسعار</h2>
-
-    <div class="space-y-4">
-      <!-- أونصة -->
-      <div class="bg-gray-50 p-4 rounded">
-        <h3 class="font-semibold mb-2 text-blue-600">أونصة</h3>
-        <div class="flex justify-between items-center mb-2">
-          <label for="adj_oz_buy">زيادة الشراء:</label>
-          <input type="number" id="adj_oz_buy" class="border px-2 py-1 w-24 text-right" />
-        </div>
-        <div class="flex justify-between items-center">
-          <label for="adj_oz_sell">زيادة البيع:</label>
-          <input type="number" id="adj_oz_sell" class="border px-2 py-1 w-24 text-right" />
-        </div>
-      </div>
-
-      <!-- العيارات -->
-      ${["24", "22", "21", "18"].map(karat => `
-      <div class="bg-gray-50 p-4 rounded">
-        <h3 class="font-semibold mb-2 text-blue-600">عيار ${karat} قيراط</h3>
-        <div class="flex justify-between items-center">
-          <label for="adj_${karat}">الزيادة العامة:</label>
-          <input type="number" id="adj_${karat}" class="border px-2 py-1 w-24 text-right" />
-        </div>
-      </div>
-      `).join("")}
-
-      <button onclick="saveAdjustments()" class="bg-green-600 text-white px-6 py-2 rounded w-full mt-4 hover:bg-green-700">💾 حفظ التعديلات</button>
+<body class="flex items-center justify-center min-h-screen">
+  <div class="bg-white shadow-xl rounded-xl w-full max-w-2xl p-6">
+    <div class="flex justify-center mb-6">
+      <img src="logo.png" alt="MHMA Logo" class="w-20 h-20 object-contain">
     </div>
+    <h2 class="text-center text-2xl font-bold text-blue-800 mb-6">تعديل زيادات الأسعار</h2>
+
+    <form onsubmit="saveAdjustments(); return false;">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-medium mb-1" for="adj_oz">أونصة</label>
+          <input type="number" id="adj_oz" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium mb-1" for="adj_24">24 قيراط</label>
+          <input type="number" id="adj_24" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium mb-1" for="adj_22">22 قيراط</label>
+          <input type="number" id="adj_22" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium mb-1" for="adj_21">21 قيراط</label>
+          <input type="number" id="adj_21" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-medium mb-1" for="adj_18">18 قيراط</label>
+          <input type="number" id="adj_18" class="w-full border rounded px-3 py-2" />
+        </div>
+      </div>
+      <div class="text-center mt-6">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">حفظ التعديلات</button>
+      </div>
+    </form>
   </div>
 
-  <script>
-    function saveAdjustments() {
-      ['oz_buy', 'oz_sell', '24', '22', '21', '18'].forEach(k => {
-        const value = parseFloat(document.getElementById('adj_' + k).value) || 0;
-        localStorage.setItem('adj_' + k, value);
-      });
-      alert("✅ تم حفظ التعديلات بنجاح");
-    }
+<script>
+function checkLogin() {
+  if (localStorage.getItem('mhma_logged_in') !== 'true') {
+    window.location.href = 'login.html';
+  }
+}
 
-    function loadAdjustments() {
-      ['oz_buy', 'oz_sell', '24', '22', '21', '18'].forEach(k => {
-        const val = localStorage.getItem('adj_' + k) || "0";
-        document.getElementById('adj_' + k).value = val;
-      });
-    }
+function saveAdjustments() {
+  ['oz', '24', '22', '21', '18'].forEach(k => {
+    const value = parseFloat(document.getElementById('adj_' + k).value) || 0;
+    localStorage.setItem('adj_' + k, value);
+  });
+  alert("✅ تم حفظ التعديلات بنجاح");
+}
 
-    loadAdjustments();
-  </script>
+function loadAdjustments() {
+  ['oz', '24', '22', '21', '18'].forEach(k => {
+    const val = localStorage.getItem('adj_' + k) || "0";
+    document.getElementById('adj_' + k).value = val;
+  });
+}
+
+checkLogin();
+loadAdjustments();
+</script>
 </body>
 </html>
