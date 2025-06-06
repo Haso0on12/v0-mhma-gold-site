@@ -65,27 +65,49 @@
     </div>
   </div>
 
-  <script>
-    const karats = ['oz', '24', '22', '21', '18'];
+<script>
+  const karats = ['oz', '24', '22', '21', '18'];
+  const API_URL = 'https://your-server.com/api/adjustments';
 
-    function saveAdjustments() {
+  // جلب التعديلات من السيرفر وعرضها في الحقول
+  async function loadAdjustments() {
+    try {
+      const resp = await fetch(API_URL);
+      const data = await resp.json();
       karats.forEach(k => {
-        const buy = parseFloat(document.getElementById(`adj_${k}_buy`).value) || 0;
-        const sell = parseFloat(document.getElementById(`adj_${k}_sell`).value) || 0;
-        localStorage.setItem(`adj_${k}_buy`, buy);
-        localStorage.setItem(`adj_${k}_sell`, sell);
+        document.getElementById(`adj_${k}_buy`).value = data[`${k}_buy`] ?? 0;
+        document.getElementById(`adj_${k}_sell`).value = data[`${k}_sell`] ?? 0;
       });
-      alert('✅ تم حفظ التعديلات بنجاح');
+    } catch (err) {
+      console.error('خطأ بجلب التعديلات من السيرفر:', err);
     }
+  }
 
-    function loadAdjustments() {
-      karats.forEach(k => {
-        document.getElementById(`adj_${k}_buy`).value = localStorage.getItem(`adj_${k}_buy`) || "0";
-        document.getElementById(`adj_${k}_sell`).value = localStorage.getItem(`adj_${k}_sell`) || "0";
+  // إرسال التعديلات للسيرفر عند الضغط على زر الحفظ
+  async function saveAdjustments() {
+    const payload = {};
+    karats.forEach(k => {
+      const buy = parseFloat(document.getElementById(`adj_${k}_buy`).value) || 0;
+      const sell = parseFloat(document.getElementById(`adj_${k}_sell`).value) || 0;
+      payload[`${k}_buy`] = buy;
+      payload[`${k}_sell`] = sell;
+    });
+
+    try {
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
+      alert('✅ تم حفظ التعديلات في السيرفر بنجاح');
+    } catch (err) {
+      console.error('خطأ بحفظ التعديلات على السيرفر:', err);
+      alert('❌ حدث خطأ أثناء حفظ التعديلات');
     }
+  }
 
-    loadAdjustments();
-  </script>
+  loadAdjustments();
+</script>
+
 </body>
 </html>
