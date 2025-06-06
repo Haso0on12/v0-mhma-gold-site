@@ -11,7 +11,7 @@
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background-color: #f9fafb; /* خلفية رمادية فاتحة خفيفة */
+      background-color: #ffffff; /* الخلفية بيضاء */
     }
     .price-cell {
       transition: color 0.3s ease;
@@ -26,7 +26,7 @@
       border-radius: 0.5rem;     /* rounded-md */
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* ظل خفيف */
       padding: 2rem;
-      margin-top: -4rem; /* لتداخل البطاقة قليلاً مع الهيدر */
+      margin-top: -2rem; /* قلّصنا التداخل مع الهيدر */
     }
   </style>
 </head>
@@ -42,7 +42,7 @@
   <main class="p-6 flex justify-center">
     <div id="content-wrapper" class="w-full max-w-2xl mx-4">
       <!-- عنوان البطاقة -->
-      <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
+      <h2 class="text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
 
       <div id="connection-status" class="flex flex-col justify-center items-center gap-2 mb-6 text-lg font-semibold">
         <div class="flex items-center gap-2">
@@ -112,7 +112,7 @@
 
     // دالة جلب البيانات وعرضها مع تلوين السعر عند التغير
     async function fetchGoldPrice() {
-      // قبل كل جلب، نُظهر حالة "جارٍ التحميل" والوقت الحالي
+      // عرض حالة "جارٍ التحميل" والوقت الحالي
       statusDiv.innerHTML = `
         <div class="flex items-center gap-2">
           <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
@@ -182,8 +182,8 @@
         let askOunceSAR = dataSAR.ask !== undefined ? parseFloat(dataSAR.ask) : null;
         if (bidOunceSAR === null || askOunceSAR === null) {
           const midSAR = dataSAR.price !== undefined 
-            ? parseFloat(dataSAR.price) 
-            : parseFloat(dataSAR.xau_price || 0);
+            ?	parseFloat(dataSAR.price) 
+            :	parseFloat(dataSAR.xau_price || 0);
           bidOunceSAR = midSAR;
           askOunceSAR = midSAR;
         }
@@ -202,11 +202,11 @@
 
         const spreadGram21 = spreadPerGram * (21 / 24);
         const bidGram21 = parseFloat((midGram21k - spreadGram21 + adj21Buy).toFixed(2));
-        const askGram21 = parseFloat((midGram21k + spreadGram21 + adj21Sell).toFixed(2));
+        const askGram21 =	parseFloat((midGram21k + spreadGram21 + adj21Sell).toFixed(2));
 
         const spreadGram18 = spreadPerGram * (18 / 24);
-        const bidGram18 = parseFloat((midGram18k - spreadGram18 + adj18Buy).toFixed(2));
-        const askGram18 = parseFloat((midGram18k + spreadGram18 + adj18Sell).toFixed(2));
+        const bidGram18 =	parseFloat((midGram18k - spreadGram18 + adj18Buy).toFixed(2));
+        const askGram18 =	parseFloat((midGram18k + spreadGram18 + adj18Sell).toFixed(2));
 
         // 7) بناء صفوف الجدول
         let rows = "";
@@ -237,7 +237,7 @@
         rows += `
           <tr>
             ${tdCell('karat24-buy', bidGram24, prevPrices['24'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('karat24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('karat24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline	w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50">عيار 24</td>
           </tr>
         `;
@@ -247,7 +247,7 @@
           <tr>
             ${tdCell('karat22-buy', bidGram22, prevPrices['22'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             ${tdCell('karat22-sell', askGram22, prevPrices['22'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2 bg-blue-50">عيار 22</td>
+            <td class="border py-2	bg-blue-50">عيار 22</td>
           </tr>
         `;
 
@@ -256,7 +256,7 @@
           <tr>
             ${tdCell('karat21-buy', bidGram21, prevPrices['21'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             ${tdCell('karat21-sell', askGram21, prevPrices['21'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2 bg-blue-50">عيار 21</td>
+            <td class="border py-2	bg-blue-50">عيار 21</td>
           </tr>
         `;
 
@@ -264,8 +264,8 @@
         rows += `
           <tr>
             ${tdCell('karat18-buy', bidGram18, prevPrices['18'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('karat18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2 bg-blue-50">عيار 18</td>
+            ${tdCell('karat18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.svg.png"	class="inline w-4 h-4 ml-1" /> ')}
+            <td class="border py-2	bg-blue-50">عيار 18</td>
           </tr>
         `;
 
