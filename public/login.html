@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تسجيل الدخول | MHMA</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(to right, #f1f5f9, #cfe0f1);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+  <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-sm">
+    <div class="flex justify-center mb-6">
+      <img src="logo.png" alt="MHMA Logo" class="w-24 h-24 object-contain">
+    </div>
+    <h2 class="text-center text-2xl font-bold text-blue-800 mb-6">تسجيل الدخول</h2>
+
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">اسم المستخدم</label>
+        <input type="text" id="username" required class="mt-1 w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">كلمة المرور</label>
+        <input type="password" id="password" required class="mt-1 w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200">دخول</button>
+    </form>
+
+    <p id="errorMsg" class="text-red-600 text-sm mt-4 text-center hidden">بيانات الدخول غير صحيحة</p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+
+      if (user === 'admin' && pass === 'mhma123') {
+        localStorage.setItem('mhma_logged_in', 'true');
+        window.location.href = 'edit.html';
+      } else {
+        document.getElementById('errorMsg').classList.remove('hidden');
+      }
+    });
+  </script>
+
+</body>
+</html>
