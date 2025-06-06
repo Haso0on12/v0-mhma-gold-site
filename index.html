@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MHMA - أسعار الذهب</title>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- خط القاهرة -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #ffffff;
+    }
+    .price-cell {
+      transition: color 0.3s ease;
+    }
+    /* حاوية المحتوى */
+    #content-wrapper {
+      background-color: #ffffff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-top: -1.5rem;
+    }
+    @media (min-width: 640px) {
+      #content-wrapper {
+        padding: 2rem;
+        margin-top: -2rem;
+      }
+    }
+    /* أيقونات التواصل الاجتماعي */
+    .social-icons img {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900">
+
+  <!-- الهيدر مع شعار واحد -->
+  <header class="bg-blue-50 text-white relative flex items-center justify-center" style="height: 200px;">
+    <img src="logo.png" alt="MHMA Logo"
+         class="h-32 sm:h-48 md:h-56 lg:h-64"
+         style="max-width: none;" />
+  </header>
+
+  <main class="px-4 py-6 flex justify-center">
+    <div id="content-wrapper" class="w-full max-w-xl mx-4">
+      <!-- عنوان البطاقة -->
+      <h2 class="text-xl sm:text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
+
+      <!-- الدائرة والساعة فقط -->
+      <div id="connection-status" class="flex items-center justify-center gap-2 mb-6">
+        <span id="status-circle" class="w-3 h-3 rounded-full bg-yellow-400"></span>
+        <div id="current-time" class="text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm">
+          --:-- ص/م
+        </div>
+      </div>
+
+      <!-- جدول الأسعار -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden mx-auto">
+          <thead>
+            <tr>
+              <th class="py-2 px-3 sm:py-3 sm:px-5 border bg-blue-50 text-gray-800 text-sm sm:text-base">الشراء</th>
+              <th class="py-2 px-3 sm:py-3 sm:px-5 border bg-blue-50 text-gray-800 text-sm sm:text-base">البيع</th>
+              <th class="py-2 px-3 sm:py-3 sm:px-5 border bg-blue-50 text-gray-800 text-sm sm:text-base">العيار</th>
+            </tr>
+          </thead>
+          <tbody id="gold-prices" class="text-base sm:text-lg">
+            <tr><td colspan="3" class="py-4">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">
+        Prices are in Saudi Riyals (SAR)
+      </p>
+    </div>
+  </main>
+
+  <footer class="bg-blue-50 text-center text-xs sm:text-sm p-3 sm:p-4 mt-6">
+    <div class="mx-2 space-y-1">
+      <div class="font-semibold">Contact:</div>
+      <div>mhma-alarbash@outlook.com</div>
+      <div>Phone: 0530091668 / 0138997999</div>
+      <div>Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3</div>
+    </div>
+    <div class="mt-4 flex justify-start space-x-3 social-icons px-4">
+      <a href="https://www.instagram.com/mhma_alarbash?igsh=cjgwdmR3Y29wMzU=" target="_blank" aria-label="Instagram">
+        <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" alt="Instagram">
+      </a>
+      <a href="https://wa.me/966530091668" target="_blank" aria-label="WhatsApp">
+        <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp">
+      </a>
+      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank" aria-label="Google Maps">
+        <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Google Maps">
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // عناصر الدائرة والوقت والجدول
+    const circle = document.getElementById('status-circle');
+    const timeDiv = document.getElementById('current-time');
+    const pricesTable = document.getElementById('gold-prices');
+
+    // مفاتيح وعناوين GoldAPI
+    const GOLDAPI_KEY    = "goldapi-jzk9smbg824oq-io";
+    const GOLDAPI_URL_USD = "https://www.goldapi.io/api/XAU/USD";
+    const GOLDAPI_URL_SAR = "https://www.goldapi.io/api/XAU/SAR";
+
+    // حفظ الأسعار السابقة لتمييز الارتفاع والهبوط
+    const prevPrices = {
+      ounce: { bid: null, ask: null },
+      '24':   { bid: null, ask: null },
+      '22':   { bid: null, ask: null },
+      '21':   { bid: null, ask: null },
+      '18':   { bid: null, ask: null }
+    };
+
+    // تحديث الساعة بتنسيق 12 ساعة بتوقيت الرياض
+    function updateClock() {
+      const now = new Date();
+      const options = {
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Riyadh'
+      };
+      timeDiv.textContent = new Intl.DateTimeFormat('ar-EG', options).format(now);
+    }
+
+    // جلب الأسعار وتحديث الجدول وتلوين الدائرة
+    async function fetchGoldPrice() {
+      circle.classList.remove('bg-green-500', 'bg-red-500');
+      circle.classList.add('bg-yellow-400');
+
+      try {
+        // سعر الأونصة بالدولار
+        const respUSD = await fetch(GOLDAPI_URL_USD, {
+          headers: { "x-access-token": GOLDAPI_KEY }
+        });
+        const dataUSD = await respUSD.json();
+        let bidOunceUSD = parseFloat(dataUSD.bid ?? dataUSD.price ?? dataUSD.xau_price);
+        let askOunceUSD = parseFloat(dataUSD.ask ?? dataUSD.price ?? dataUSD.xau_price);
+
+        // سعر الجرام بالريال
+        const respSAR = await fetch(GOLDAPI_URL_SAR, {
+          headers: { "x-access-token": GOLDAPI_KEY }
+        });
+        const dataSAR = await respSAR.json();
+        const midGram24k = parseFloat(dataSAR.price_gram_24k  || 0);
+        const midGram22k = parseFloat(dataSAR.price_gram_22k  || 0);
+        const midGram21k = parseFloat(dataSAR.price_gram_21k  || 0);
+        const midGram18k = parseFloat(dataSAR.price_gram_18k  || 0);
+
+        // قراءة التعديلات من localStorage
+        const adj = k => parseFloat(localStorage.getItem(`adj_${k}_buy`) || 0);
+        const ads = k => parseFloat(localStorage.getItem(`adj_${k}_sell`) || 0);
+
+        const finalBidOunceUSD = parseFloat((bidOunceUSD + adj('oz')).toFixed(2));
+        const finalAskOunceUSD = parseFloat((askOunceUSD + ads('oz')).toFixed(2));
+
+        const bidOunceSAR = parseFloat(dataSAR.bid ?? dataSAR.price ?? dataSAR.xau_price);
+        const askOunceSAR = parseFloat(dataSAR.ask ?? dataSAR.price ?? dataSAR.xau_price);
+        const spreadPerGram = (askOunceSAR - bidOunceSAR) / 31.1035;
+
+        // دوال مساعدة لبناء صفوف الجدول
+        function tdCell(id, newV, oldV, prefix = '') {
+          let cls = '';
+          if (oldV !== null) cls = newV > oldV ? 'text-green-500' : newV < oldV ? 'text-red-500' : '';
+          setTimeout(() => document.getElementById(id)?.classList.remove('text-green-500','text-red-500'), 500);
+          return `<td id="${id}" class="border py-2 price-cell ${cls}">${prefix}${newV.toFixed(2)}</td>`;
+        }
+
+        let rows = '';
+        // صفوف الأونصة والجرامات
+        const specs = [
+          { key: 'ounce', label: 'أونصة', bid: finalBidOunceUSD, ask: finalAskOunceUSD, pre: '$ ' },
+          { key: '24', label: 'عيار 24', bid: midGram24k - spreadPerGram + adj('24'), ask: midGram24k + spreadPerGram + ads('24'), pre: '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ' },
+          { key: '22', label: 'عيار 22', bid: midGram22k - spreadPerGram*(22/24) + adj('22'), ask: midGram22k + spreadPerGram*(22/24) + ads('22'), pre: '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ' },
+          { key: '21', label: 'عيار 21', bid: midGram21k - spreadPerGram*(21/24) + adj('21'), ask: midGram21k + spreadPerGram*(21/24) + ads('21'), pre: '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ' },
+          { key: '18', label: 'عيار 18', bid: midGram18k - spreadPerGram*(18/24) + adj('18'), ask: midGram18k + spreadPerGram*(18/24) + ads('18'), pre: '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ' },
+        ];
+
+        specs.forEach(s => {
+          rows += `<tr class="${s.key==='ounce'?'bg-gray-50 font-semibold':''}">
+            ${tdCell(`${s.key}-buy`, s.bid, prevPrices[s.key]?.bid, s.pre)}
+            ${tdCell(`${s.key}-sell`, s.ask, prevPrices[s.key]?.ask, s.pre)}
+            <td class="border py-2 bg-blue-50">${s.label}</td>
+          </tr>`;
+          prevPrices[s.key] = { bid: s.bid, ask: s.ask };
+        });
+
+        pricesTable.innerHTML = rows;
+        circle.classList.replace('bg-yellow-400','bg-green-500');
+      } catch {
+        pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
+        circle.classList.replace('bg-yellow-400','bg-red-500');
+      }
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+    fetchGoldPrice();
+    setInterval(fetchGoldPrice, 2000);
+  </script>
+
+</body>
+</html>
