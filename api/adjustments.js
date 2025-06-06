@@ -1,5 +1,4 @@
 // api/adjustments.js
-
 import { kv } from '@vercel/kv';
 
 const DEFAULT_ADJUSTMENTS = {
@@ -16,30 +15,23 @@ const DEFAULT_ADJUSTMENTS = {
 };
 
 async function ensureDefaults() {
-  // نحاول جلب المفتاح 'adjustments' من KV
   const stored = await kv.get('adjustments');
   if (!stored) {
-    // إذا لم يوجد المفتاح مسبقاً، ننشئه بالقيم الافتراضية
     await kv.set('adjustments', DEFAULT_ADJUSTMENTS);
     return DEFAULT_ADJUSTMENTS;
   }
   return stored;
 }
 
-// هذه الدالة هي التي يستخدمها Vercel عند استدعاء /api/adjustments
 export default async function handler(req, res) {
   try {
-    // إذا كان الطلب من نوع GET
     if (req.method === 'GET') {
       const data = await ensureDefaults();
       return res.status(200).json(data);
-    }
-    // إذا كان الطلب من نوع POST
-    else if (req.method === 'POST') {
-      const incoming = await req.json(); // قراءة JSON من جسم الطلب 
+    } else if (req.method === 'POST') {
+      const incoming = await req.json();
       const current = await ensureDefaults();
 
-      // المفاتيح المسموح بتعديلهَا فقط
       const allowedKeys = [
         'oz_buy', 'oz_sell',
         '24_buy', '24_sell',
@@ -48,7 +40,6 @@ export default async function handler(req, res) {
         '18_buy', '18_sell'
       ];
 
-      // نحدث كل قيمة وصلت في جسم الطلب
       for (const key of allowedKeys) {
         if (incoming[key] !== undefined) {
           const num = parseFloat(incoming[key]);
@@ -56,12 +47,9 @@ export default async function handler(req, res) {
         }
       }
 
-      // نخزن الكائن المحدث في KV
       await kv.set('adjustments', current);
       return res.status(200).json({ status: 'ok', adjustments: current });
-    }
-    // أي طريقة HTTP غير GET أو POST غير مسموح بها
-    else {
+    } else {
       return res.status(405).json({ error: 'Method Not Allowed' });
     }
   } catch (err) {
