@@ -48,7 +48,7 @@
 
       <!-- الدائرة والساعة فقط -->
       <div id="connection-status" class="flex items-center justify-center gap-2 mb-6">
-        <!-- الدائرة: bg-yellow-400 أثناء التحميل، تصبح bg-green-500 عند اكتمال التحميل -->
+        <!-- الدائرة: bg-yellow-400 أثناء التحميل، تصبح bg-green-500 عند اكتمال التحميل، أو bg-red-500 إذا فشل -->
         <span id="status-circle" class="w-3 h-3 rounded-full bg-yellow-400"></span>
         <!-- الساعة -->
         <div id="current-time" class="text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm">
@@ -73,7 +73,7 @@
       </div>
 
       <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">
-         Prices are in Saudi Riyals (SAR)
+        الأونصة بالـ USD، والجرام بالـ SAR (نشتقّ منه أسعار شراء/بيع بحسب العيار).
       </p>
     </div>
   </main>
@@ -118,7 +118,7 @@
     // جلب الأسعار وتحديث الجدول
     async function fetchGoldPrice() {
       // أثناء التحميل: اجعل الدائرة صفراء
-      circle.classList.remove('bg-green-500');
+      circle.classList.remove('bg-green-500', 'bg-red-500');
       circle.classList.add('bg-yellow-400');
 
       try {
@@ -285,14 +285,14 @@
         pricesTable.innerHTML = rows;
 
         // بعد التحميل: دائرة خضراء
-        circle.classList.remove('bg-yellow-400');
+        circle.classList.remove('bg-yellow-400', 'bg-red-500');
         circle.classList.add('bg-green-500');
       } catch (error) {
         console.error("خطأ في جلب البيانات:", error);
         pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
-        // إذا فشل، نبقي الدائرة صفراء
-        circle.classList.remove('bg-green-500');
-        circle.classList.add('bg-yellow-400');
+        // إذا فشل، اجعل الدائرة حمراء
+        circle.classList.remove('bg-green-500', 'bg-yellow-400');
+        circle.classList.add('bg-red-500');
       }
     }
 
