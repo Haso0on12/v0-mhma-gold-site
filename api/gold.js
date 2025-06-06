@@ -8,7 +8,7 @@
 import https from "https";
 
 // استخدم مفتاحك الخاص من goldapi.io
-const GOLDAPI_KEY = process.env.GOLDAPI_KEY; 
+const GOLDAPI_KEY = process.env.goldapi-jzk9smbg824oq-io; 
 // تأكّد من إضافة GOLDAPI_KEY في متغيّرات البيئة على Vercel
 
 export default function handler(req, res) {
