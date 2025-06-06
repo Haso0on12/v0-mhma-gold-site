@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MHMA - أسعار الذهب</title>
-  <!-- Tailwind CSS -->
+  <!-- رابط Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <!-- خط القاهرة -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Cairo', sans-serif;
@@ -41,7 +42,7 @@
 
   <!-- الهيدر مع شعار واحد -->
   <header class="bg-blue-50 text-white relative flex items-center justify-center" style="height: 200px;">
-    <!-- لاحظ أن الشعار يجب أن يكون في public/logo.png -->
+    <!-- تأكد أن logo.png موجود داخل public/ -->
     <img src="/logo.png" alt="MHMA Logo"
          class="h-32 sm:h-48 md:h-56 lg:h-64"
          style="max-width: none;" />
@@ -156,6 +157,7 @@
             "Content-Type": "application/json"
           }
         });
+        if (!respUSD.ok) throw new Error(`GoldAPI USD Error: ${respUSD.status}`);
         const dataUSD = await respUSD.json();
 
         let bidOunceUSD = dataUSD.bid !== undefined ? parseFloat(dataUSD.bid) : null;
@@ -176,6 +178,7 @@
             "Content-Type": "application/json"
           }
         });
+        if (!respSAR.ok) throw new Error(`GoldAPI SAR Error: ${respSAR.status}`);
         const dataSAR = await respSAR.json();
 
         const midGram24k = parseFloat(dataSAR.price_gram_24k || 0);
@@ -185,8 +188,6 @@
 
         // 2. جلب التعديلات (adjustments) من الـ API الخاص بـ Vercel
         const adjustments = await fetchAdjustments();
-        console.log(">>> adjustments JSON:", adjustments);
-
         const adjOunceBuy  = adjustments.oz_buy  || 0;
         const adjOunceSell = adjustments.oz_sell || 0;
         const adj24Buy     = adjustments['24_buy']  || 0;
@@ -246,7 +247,7 @@
                   </td>`;
         }
 
-        // 7. بناء صفوف الجدول باستخدام الرمز المناسب لكل عيار
+        // 7. بناء صفوف الجدول باستخدام الرموز المناسبة لكل صف
         let rows = "";
 
         // صف الأونصة (USD) مع رمز $
@@ -353,13 +354,22 @@
         circle.classList.remove('bg-yellow-400', 'bg-red-500');
         circle.classList.add('bg-green-500');
       } catch (error) {
-        console.error("خطأ في جلب البيانات:", error);
+        console.error("خطأ في fetchGoldPrice:", error);
         document.getElementById('gold-prices').innerHTML =
           '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
         circle.classList.remove('bg-green-500', 'bg-yellow-400');
         circle.classList.add('bg-red-500');
       }
     }
+
+    // تهيئة prevPrices للاستخدام في tdCell
+    const prevPrices = {
+      ounce: { bid: null, ask: null },
+      '24':   { bid: null, ask: null },
+      '22':   { bid: null, ask: null },
+      '21':   { bid: null, ask: null },
+      '18':   { bid: null, ask: null }
+    };
 
     // تشغيل الساعة أولًا ثم تحديث كل ثانية
     updateClock();
@@ -369,5 +379,6 @@
     fetchGoldPrice();
     setInterval(fetchGoldPrice, 2000);
   </script>
+
 </body>
 </html>
