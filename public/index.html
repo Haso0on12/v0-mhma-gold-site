@@ -20,6 +20,17 @@
   </style>
 </head>
 <body class="bg-white text-gray-900">
+
+  <!-- التقاط الأخطاء العامة -->
+  <script>
+    window.addEventListener('error', e => {
+      console.error('Global error caught:', e.error || e.message);
+    });
+    window.addEventListener('unhandledrejection', e => {
+      console.error('Unhandled Promise rejection:', e.reason);
+    });
+  </script>
+
   <header class="bg-blue-50 text-white flex justify-center items-center" style="height:200px;">
     <img src="logo.png" alt="MHMA Logo" class="h-32 sm:h-48 md:h-56 lg:h-64" />
   </header>
@@ -79,69 +90,93 @@
 
     function updateClock() {
       const now = new Date();
-      timeDiv.textContent = new Intl.DateTimeFormat('ar-EG',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'Asia/Riyadh'}).format(now);
+      timeDiv.textContent =
+        new Intl.DateTimeFormat('ar-EG',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'Asia/Riyadh'})
+        .format(now);
     }
 
-    // جلب التعديلات أولاً
     async function loadAdjustments() {
       try {
         const resp = await fetch(ADJ_API_URL);
-        return await resp.json();
-      } catch {
+        console.log('🔄 adjustments status:', resp.status);
+        const data = await resp.json();
+        console.log('🔄 adjustments data:', data);
+        return data;
+      } catch (err) {
+        console.error('🔴 adjustments fetch failed:', err);
         return {};
       }
     }
 
     async function fetchGoldPrice() {
+      console.log('⏳ Starting fetchGoldPrice at', new Date().toLocaleTimeString());
       circle.classList.replace('bg-green-500','bg-yellow-400');
       circle.classList.replace('bg-red-500','bg-yellow-400');
 
       const adj = await loadAdjustments();
-      const getAdj = (k,type) => parseFloat(adj[`${k}_${type}`])||0;
+      console.log('🔢 using adjustments:', adj);
 
       try {
-        const [usd, sar] = await Promise.all([
-          fetch(GOLDAPI_URL_USD, { headers:{'x-access-token':GOLDAPI_KEY} }).then(r=>r.json()),
-          fetch(GOLDAPI_URL_SAR, { headers:{'x-access-token':GOLDAPI_KEY} }).then(r=>r.json())
+        const [respUSD, respSAR] = await Promise.all([
+          fetch(GOLDAPI_URL_USD, { headers:{'x-access-token':GOLDAPI_KEY} }),
+          fetch(GOLDAPI_URL_SAR, { headers:{'x-access-token':GOLDAPI_KEY} })
         ]);
 
-        // أسعار أونصة
-        const bidO = parseFloat(usd.bid ?? usd.price ?? usd.xau_price);
-        const askO = parseFloat(usd.ask ?? usd.price ?? usd.xau_price);
+        if (!respUSD.ok || !respSAR.ok) {
+          const t1 = await respUSD.text(), t2 = await respSAR.text();
+          throw new Error(`Bad status: USD=${respUSD.status}(${t1}), SAR=${respSAR.status}(${t2})`);
+        }
 
-        // أسعار غرامات
-        const gram24 = parseFloat(sar.price_gram_24k  ||0);
-        const gram22 = parseFloat(sar.price_gram_22k  ||0);
-        const gram21 = parseFloat(sar.price_gram_21k  ||0);
-        const gram18 = parseFloat(sar.price_gram_18k  ||0);
-        const spread = (parseFloat(sar.ask ?? sar.price)-parseFloat(sar.bid ?? sar.price)) / 31.1035;
+        const dataUSD = await respUSD.json();
+        const dataSAR = await respSAR.json();
+        console.log('Data USD:', dataUSD, 'Data SAR:', dataSAR);
 
-        // حافظ الأسعار
+        // استخراج الأسعار
+        const bidO  = parseFloat(dataUSD.bid  ?? dataUSD.price ?? dataUSD.xau_price);
+        const askO  = parseFloat(dataUSD.ask  ?? dataUSD.price ?? dataUSD.xau_price);
+        const g24   = parseFloat(dataSAR.price_gram_24k  || 0);
+        const g22   = parseFloat(dataSAR.price_gram_22k  || 0);
+        const g21   = parseFloat(dataSAR.price_gram_21k  || 0);
+        const g18   = parseFloat(dataSAR.price_gram_18k  || 0);
+        const spread= (parseFloat(dataSAR.ask  ?? dataSAR.price) - parseFloat(dataSAR.bid  ?? dataSAR.price)) / 31.1035;
+
         const specs = [
-          { k:'oz', lbl:'أونصة',    bid:bidO+getAdj('oz','buy'), ask:askO+getAdj('oz','sell'), pre:'$ ' },
-          { k:'24', lbl:'عيار 24', bid:gram24-spread+getAdj('24','buy'), ask:gram24+spread+getAdj('24','sell'), pre:'Â ' },
-          { k:'22', lbl:'عيار 22', bid:gram22-spread*22/24+getAdj('22','buy'), ask:gram22+spread*22/24+getAdj('22','sell'), pre:'Â ' },
-          { k:'21', lbl:'عيار 21', bid:gram21-spread*21/24+getAdj('21','buy'), ask:gram21+spread*21/24+getAdj('21','sell'), pre:'Â ' },
-          { k:'18', lbl:'عيار 18', bid:gram18-spread*18/24+getAdj('18','buy'), ask:gram18+spread*18/24+getAdj('18','sell'), pre:'Â ' }
+          { k:'ounce', lbl:'أونصة',    bid: bidO+ (parseFloat(adj.oz_buy)||0), ask: askO+ (parseFloat(adj.oz_sell)||0), pre:'$ ' },
+          { k:'24',    lbl:'عيار 24', bid: g24-spread+ (parseFloat(adj['24_buy'])||0), ask: g24+spread+ (parseFloat(adj['24_sell'])||0), pre:'﷼ ' },
+          { k:'22',    lbl:'عيار 22', bid: g22-spread*(22/24)+ (parseFloat(adj['22_buy'])||0), ask: g22+spread*(22/24)+ (parseFloat(adj['22_sell'])||0), pre:'﷼ ' },
+          { k:'21',    lbl:'عيار 21', bid: g21-spread*(21/24)+ (parseFloat(adj['21_buy'])||0), ask: g21+spread*(21/24)+ (parseFloat(adj['21_sell'])||0), pre:'﷼ ' },
+          { k:'18',    lbl:'عيار 18', bid: g18-spread*(18/24)+ (parseFloat(adj['18_buy'])||0), ask: g18+spread*(18/24)+ (parseFloat(adj['18_sell'])||0), pre:'﷼ ' }
         ];
 
+        // بناء الصفوف
         let rows = '';
         specs.forEach(s => {
-          ['bid','ask'].forEach((t,i) => {
-            const id  = `${s.k}-${t}`;
-            const val = s[t];
-            const prev = prevPrices[s.k][t];
-            let cls = prev!=null ? (val>prev?'text-green-500':val<prev?'text-red-500':'') : '';
-            setTimeout(()=>document.getElementById(id)?.classList.remove('text-green-500','text-red-500'),500);
-            rows += `<td id="${id}" class="border py-2 price-cell ${cls}">${s.pre}${val.toFixed(2)}</td>`;
-          });
-          rows += `<td class="border py-2 bg-blue-50">${s.lbl}</td></tr>`;
-          prevPrices[s.k] = { bid:s.bid, ask:s.ask };
+          rows += '<tr>';
+          // شراء
+          let clsB = '';
+          if (prevPrices[s.k]?.bid != null) {
+            clsB = s.bid > prevPrices[s.k].bid ? 'text-green-500' : s.bid < prevPrices[s.k].bid ? 'text-red-500' : '';
+          }
+          rows += `<td class="border py-2 price-cell ${clsB}">${s.pre}${s.bid.toFixed(2)}</td>`;
+          // بيع
+          let clsS = '';
+          if (prevPrices[s.k]?.ask != null) {
+            clsS = s.ask > prevPrices[s.k].ask ? 'text-green-500' : s.ask < prevPrices[s.k].ask ? 'text-red-500' : '';
+          }
+          rows += `<td class="border py-2 price-cell ${clsS}">${s.pre}${s.ask.toFixed(2)}</td>`;
+          // العيار
+          rows += `<td class="border py-2 bg-blue-50">${s.lbl}</td>`;
+          rows += '</tr>';
+
+          prevPrices[s.k] = { bid: s.bid, ask: s.ask };
         });
 
         pricesTable.innerHTML = rows;
+        console.log('✅ Table rows updated');
         circle.classList.replace('bg-yellow-400','bg-green-500');
-      } catch {
+      }
+      catch (err) {
+        console.error('❌ Error in fetchGoldPrice:', err);
         pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
         circle.classList.replace('bg-yellow-400','bg-red-500');
       }
@@ -150,5 +185,6 @@
     updateClock(); setInterval(updateClock,1000);
     fetchGoldPrice(); setInterval(fetchGoldPrice,2000);
   </script>
+
 </body>
 </html>
