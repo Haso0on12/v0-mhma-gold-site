@@ -20,9 +20,6 @@
     #connection-status {
       @apply flex items-center justify-center gap-2 mb-6;
     }
-    #status-circle {
-      @apply w-3 h-3 rounded-full bg-yellow-400;
-    }
     #current-time {
       @apply text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm;
     }
@@ -62,7 +59,7 @@
 
       <!-- الدائرة والساعة فقط -->
       <div id="connection-status">
-        <span id="status-circle"></span>
+        <span id="status-circle" class="w-3 h-3 rounded-full bg-yellow-400"></span>
         <div id="current-time">--:-- ص/م</div>
       </div>
 
@@ -297,7 +294,7 @@
       } catch (error) {
         console.error("خطأ في جلب البيانات:", error);
         pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
-        // إذا فشل، نبقي الدائرة صفراء أو نجعلها حمراء:
+        // إذا فشل، نبقي الدائرة صفراء
         circle.classList.remove('bg-green-500');
         circle.classList.add('bg-yellow-400');
       }
