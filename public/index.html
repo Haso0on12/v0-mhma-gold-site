@@ -39,7 +39,7 @@
 
   <header class="bg-blue-50 text-white flex justify-center items-center" style="height: 200px;">
     <img
-      src="/logo.png"
+      src="logo.png"
       alt="MHMA Logo"
       class="h-32 sm:h-48 md:h-56 lg:h-64"
       style="max-width: none;"
@@ -133,6 +133,7 @@
       circle.classList.add('bg-yellow-400');
 
       try {
+        // جلب بيانات الأونصة بالدولار
         const respUSD = await fetch(GOLDAPI_URL_USD, {
           headers: { "x-access-token": GOLDAPI_KEY }
         });
@@ -140,6 +141,7 @@
         let bidO = parseFloat(dataUSD.bid ?? dataUSD.price ?? dataUSD.xau_price);
         let askO = parseFloat(dataUSD.ask ?? dataUSD.price ?? dataUSD.xau_price);
 
+        // جلب بيانات الغرام بالريال
         const respSAR = await fetch(GOLDAPI_URL_SAR, {
           headers: { "x-access-token": GOLDAPI_KEY }
         });
@@ -150,38 +152,42 @@
         const mid18 = parseFloat(dataSAR.price_gram_18k  || 0);
         const spreadO = (parseFloat(dataSAR.ask ?? dataSAR.price) - parseFloat(dataSAR.bid ?? dataSAR.price)) / 31.1035;
 
+        // تجهيز المواصفات مع أيقونة الريال
         const specs = [
           { key:'ounce', label:'أونصة', bid:bidO, ask:askO, pre:'$ ' },
           { key:'24',    label:'عيار 24', bid:mid24 - spreadO, ask:mid24 + spreadO,
-            pre:'<img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-4 h-4 ml-1">' },
+            pre:'<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-4 h-4 ml-1" /> ' },
           { key:'22',    label:'عيار 22', bid:mid22 - spreadO * (22/24), ask:mid22 + spreadO * (22/24),
-            pre:'<img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-4 h-4 ml-1">' },
+            pre:'<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-4 h-4 ml-1" /> ' },
           { key:'21',    label:'عيار 21', bid:mid21 - spreadO * (21/24), ask:mid21 + spreadO * (21/24),
-            pre:'<img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-4 h-4 ml-1">' },
+            pre:'<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-4 h-4 ml-1" /> ' },
           { key:'18',    label:'عيار 18', bid:mid18 - spreadO * (18/24), ask:mid18 + spreadO * (18/24),
-            pre:'<img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-4 h-4 ml-1">' },
+            pre:'<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-4 h-4 ml-1" /> ' },
         ];
 
+        // بناء صفوف الجدول
         let rows = '';
         specs.forEach(s => {
           rows += '<tr>';
+          // شراء
           let clsB = '';
           if (prevPrices[s.key].bid != null) {
             clsB = s.bid > prevPrices[s.key].bid ? 'text-green-500' :
                    s.bid < prevPrices[s.key].bid ? 'text-red-500' : '';
           }
           rows += `<td class="border py-2 price-cell ${clsB}">${s.pre}${s.bid.toFixed(2)}</td>`;
-
+          // بيع
           let clsS = '';
           if (prevPrices[s.key].ask != null) {
             clsS = s.ask > prevPrices[s.key].ask ? 'text-green-500' :
                    s.ask < prevPrices[s.key].ask ? 'text-red-500' : '';
           }
           rows += `<td class="border py-2 price-cell ${clsS}">${s.pre}${s.ask.toFixed(2)}</td>`;
-
+          // العيار
           rows += `<td class="border py-2 bg-blue-50">${s.label}</td>`;
           rows += '</tr>';
 
+          // تحديث prevPrices
           prevPrices[s.key].bid = s.bid;
           prevPrices[s.key].ask = s.ask;
         });
