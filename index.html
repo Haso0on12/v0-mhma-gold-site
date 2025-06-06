@@ -16,16 +16,6 @@
     .price-cell {
       transition: color 0.3s ease;
     }
-    /* ستايل الساعة والدائرة */
-    #connection-status {
-      @apply flex items-center justify-center gap-2 mb-6;
-    }
-    #status-circle {
-      @apply w-3 h-3 rounded-full bg-yellow-400;
-    }
-    #current-time {
-      @apply text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm;
-    }
     /* حاوية المحتوى */
     #content-wrapper {
       background-color: #ffffff;
@@ -39,9 +29,6 @@
         padding: 2rem;
         margin-top: -2rem;
       }
-      #current-time {
-        @apply text-xl px-4 py-1;
-      }
     }
   </style>
 </head>
@@ -50,8 +37,7 @@
   <!-- الهيدر مع الشعار -->
   <header class="bg-blue-50 text-white relative flex items-center justify-center" style="height: 200px;">
     <img src="logo.png" alt="MHMA Logo"
-         class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
-                h-32 sm:h-48 md:h-56 lg:h-64"
+         class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 h-32 sm:h-48 md:h-56 lg:h-64"
          style="max-width: none;" />
   </header>
 
@@ -61,9 +47,13 @@
       <h2 class="text-xl sm:text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
 
       <!-- الدائرة والساعة فقط -->
-      <div id="connection-status">
+      <div id="connection-status" class="flex items-center justify-center gap-2 mb-6">
+        <!-- الدائرة: bg-yellow-400 أثناء التحميل، تصبح bg-green-500 عند اكتمال التحميل -->
         <span id="status-circle" class="w-3 h-3 rounded-full bg-yellow-400"></span>
-        <div id="current-time">--:-- ص/م</div>
+        <!-- الساعة -->
+        <div id="current-time" class="text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm">
+          --:-- ص/م
+        </div>
       </div>
 
       <!-- جدول الأسعار -->
@@ -115,8 +105,11 @@
     function updateClock() {
       const now = new Date();
       const options = {
-        hour: 'numeric', minute: '2-digit', second: '2-digit',
-        hour12: true, timeZone: 'Asia/Riyadh'
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Riyadh'
       };
       const formatted = new Intl.DateTimeFormat('ar-EG', options).format(now);
       timeDiv.textContent = formatted;
@@ -124,7 +117,7 @@
 
     // جلب الأسعار وتحديث الجدول
     async function fetchGoldPrice() {
-      // أثناء التحميل: دائرة صفراء
+      // أثناء التحميل: اجعل الدائرة صفراء
       circle.classList.remove('bg-green-500');
       circle.classList.add('bg-yellow-400');
 
