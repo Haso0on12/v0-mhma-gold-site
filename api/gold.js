@@ -24,7 +24,7 @@ export default function handler(req, res) {
     path: "/api/XAU/USD", // تحصل على سعر اونصة ذهب مقابل الدولار الأميركي
     method: "GET",
     headers: {
-      "x-access-token": goldapi-jzk9smbg824oq-io,
+      "x-access-token": GOLDAPI_KEY,
       "Content-Type": "application/json"
     }
   };
