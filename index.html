@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -19,6 +20,13 @@
     #current-time {
       @apply text-xl font-bold text-gray-800 bg-gray-100 rounded-lg px-4 py-1 shadow-sm;
     }
+    /* خلفية الشعار في منتصف الصفحة */
+    #main-container {
+      background-image: url('logo.png');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 150px; /* حجم الشعار، يمكن تغييره حسب الحاجة */
+    }
   </style>
 </head>
 <body class="bg-white text-gray-900">
@@ -29,8 +37,8 @@
          style="height: 200px; max-width: none;" />
   </header>
 
-  <main class="p-6 flex justify-center">
-    <div class="w-full max-w-2xl">
+  <main id="main-container" class="p-6 flex justify-center">
+    <div class="w-full max-w-2xl bg-white bg-opacity-90 rounded-md shadow-md">
       <h2 class="text-xl font-semibold mb-2 text-center">أسعار الذهب (مباشرة)</h2>
 
       <div id="connection-status" class="flex flex-col justify-center items-center gap-2 mb-4 text-lg font-semibold">
@@ -44,7 +52,6 @@
       <table class="min-w-full bg-white border border-gray-200 text-center">
         <thead>
           <tr>
-            <!-- أضفنا bg-blue-50 و text-gray-800 مباشرة هنا -->
             <th class="py-2 px-4 border bg-blue-50 text-gray-800">الشراء</th>
             <th class="py-2 px-4 border bg-blue-50 text-gray-800">البيع</th>
             <th class="py-2 px-4 border bg-blue-50 text-gray-800">العيار</th>
@@ -314,3 +321,4 @@
 
 </body>
 </html>
+```
