@@ -18,33 +18,44 @@
     }
     /* ستايل الساعة */
     #current-time {
-      @apply text-xl font-bold text-gray-800 bg-gray-100 rounded-lg px-4 py-1 shadow-sm;
+      @apply text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm;
     }
     /* حاوية المحتوى الرئيسية */
     #content-wrapper {
       background-color: #ffffff;
       border-radius: 0.5rem;     /* rounded-md */
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* ظل خفيف */
-      padding: 2rem;
-      margin-top: -2rem; /* قلّصنا التداخل مع الهيدر */
+      padding: 1.5rem; /* تقليل الحشوة للموبايل */
+      margin-top: -1.5rem; /* تقليل التداخل مع الهيدر للموبايل */
+    }
+    @media (min-width: 640px) {
+      #content-wrapper {
+        padding: 2rem;
+        margin-top: -2rem;
+      }
+      #current-time {
+        @apply text-xl px-4 py-1;
+      }
     }
   </style>
 </head>
 <body class="bg-white text-gray-900">
 
   <!-- الهيدر مع الشعار في المنتصف -->
-  <header class="bg-blue-50 text-white px-4 relative flex items-center justify-center" style="height: 200px;">
+  <header class="bg-blue-50 text-white relative flex items-center justify-center" style="height: 200px;">
+    <!-- حجم الشعار يتغير للموبايل -->
     <img src="logo.png" alt="MHMA Logo"
-         class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
-         style="height: 200px; max-width: none;" />
+         class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
+                h-20 sm:h-28 md:h-36 lg:h-48"
+         style="max-width: none;" />
   </header>
 
-  <main class="p-6 flex justify-center">
-    <div id="content-wrapper" class="w-full max-w-2xl mx-4">
+  <main class="px-4 py-6 flex justify-center">
+    <div id="content-wrapper" class="w-full max-w-xl mx-4">
       <!-- عنوان البطاقة -->
-      <h2 class="text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
+      <h2 class="text-xl sm:text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
 
-      <div id="connection-status" class="flex flex-col justify-center items-center gap-2 mb-6 text-lg font-semibold">
+      <div id="connection-status" class="flex flex-col justify-center items-center gap-1 mb-6 text-base sm:text-lg font-semibold">
         <div class="flex items-center gap-2">
           <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
           <span class="text-yellow-600">جارٍ التحميل</span>
@@ -52,28 +63,30 @@
         <div id="current-time">--:-- ص/م</div>
       </div>
 
-      <!-- الجدول فقط بدون شعار صغير بجانبه -->
-      <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden mx-auto">
-        <thead>
-          <tr>
-            <th class="py-3 px-5 border bg-blue-50 text-gray-800">الشراء</th>
-            <th class="py-3 px-5 border bg-blue-50 text-gray-800">البيع</th>
-            <th class="py-3 px-5 border bg-blue-50 text-gray-800">العيار</th>
-          </tr>
-        </thead>
-        <tbody id="gold-prices" class="text-lg">
-          <tr><td colspan="3" class="py-6">Loading...</td></tr>
-        </tbody>
-      </table>
+      <!-- حاوية تجعل الجدول أفقي قابل للتمرير في الموبايل -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden mx-auto">
+          <thead>
+            <tr>
+              <th class="py-2 px-3 sm:py-3 sm:px-5 border bg-blue-50 text-gray-800 text-sm sm:text-base">الشراء</th>
+              <th class="py-2 px-3 sm:py-3 sm:px-5 border bg-blue-50 text-gray-800 text-sm sm:text-base">البيع</th>
+              <th class="py-2 px-3 sm:py-3 sm:px-5 border bg-blue-50 text-gray-800 text-sm sm:text-base">العيار</th>
+            </tr>
+          </thead>
+          <tbody id="gold-prices" class="text-base sm:text-lg">
+            <tr><td colspan="3" class="py-4">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-      <p class="text-sm mt-4 text-gray-600 text-center">
-        (  أسعار شراء/بيع بحسب العيار).
+      <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">
+        الأونصة بالـ USD، والجرام بالـ SAR (نشتقّ منه أسعار شراء/بيع بحسب العيار).
       </p>
     </div>
   </main>
 
-  <footer class="bg-blue-50 text-center text-sm p-4 mt-6">
-    <p>
+  <footer class="bg-blue-50 text-center text-xs sm:text-sm p-3 sm:p-4 mt-6">
+    <p class="mx-2">
       Contact: mhma-alarbash@outlook.com  |  Phone: 0530091668 , 0138997999  
       |  Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3
     </p>
@@ -182,8 +195,8 @@
         let askOunceSAR = dataSAR.ask !== undefined ? parseFloat(dataSAR.ask) : null;
         if (bidOunceSAR === null || askOunceSAR === null) {
           const midSAR = dataSAR.price !== undefined 
-            ?	parseFloat(dataSAR.price) 
-            :	parseFloat(dataSAR.xau_price || 0);
+            ? parseFloat(dataSAR.price) 
+            : parseFloat(dataSAR.xau_price || 0);
           bidOunceSAR = midSAR;
           askOunceSAR = midSAR;
         }
@@ -202,11 +215,11 @@
 
         const spreadGram21 = spreadPerGram * (21 / 24);
         const bidGram21 = parseFloat((midGram21k - spreadGram21 + adj21Buy).toFixed(2));
-        const askGram21 =	parseFloat((midGram21k + spreadGram21 + adj21Sell).toFixed(2));
+        const askGram21 = parseFloat((midGram21k + spreadGram21 + adj21Sell).toFixed(2));
 
         const spreadGram18 = spreadPerGram * (18 / 24);
-        const bidGram18 =	parseFloat((midGram18k - spreadGram18 + adj18Buy).toFixed(2));
-        const askGram18 =	parseFloat((midGram18k + spreadGram18 + adj18Sell).toFixed(2));
+        const bidGram18 = parseFloat((midGram18k - spreadGram18 + adj18Buy).toFixed(2));
+        const askGram18 = parseFloat((midGram18k + spreadGram18 + adj18Sell).toFixed(2));
 
         // 7) بناء صفوف الجدول
         let rows = "";
@@ -221,15 +234,15 @@
             const cell = document.getElementById(idKey);
             if (cell) cell.classList.remove("text-green-500", "text-red-500");
           }, 500);
-          return `<td id="${idKey}" class="border py-2 price-cell ${colorClass}">${prefix}${newValue.toFixed(2)}</td>`;
+          return `<td id="${idKey}" class="border py-2 text-sm sm:text-base price-cell ${colorClass}">${prefix}${newValue.toFixed(2)}</td>`;
         }
 
         // صف الأونصة (USD)
         rows += `
-          <tr class="bg-gray-50 font-bold">
+          <tr class="bg-gray-50 font-semibold">
             ${tdCell('ounce-buy', finalBidOunceUSD, prevPrices.ounce.bid, '$ ')}
             ${tdCell('ounce-sell', finalAskOunceUSD, prevPrices.ounce.ask, '$ ')}
-            <td class="border py-2 bg-blue-50">أونصة</td>
+            <td class="border py-2 bg-blue-50 text-sm sm:text-base">أونصة</td>
           </tr>
         `;
 
@@ -237,8 +250,8 @@
         rows += `
           <tr>
             ${tdCell('karat24-buy', bidGram24, prevPrices['24'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('karat24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline	w-4 h-4 ml-1" /> ')}
-            <td class="border py-2 bg-blue-50">عيار 24</td>
+            ${tdCell('karat24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 24</td>
           </tr>
         `;
 
@@ -247,7 +260,7 @@
           <tr>
             ${tdCell('karat22-buy', bidGram22, prevPrices['22'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             ${tdCell('karat22-sell', askGram22, prevPrices['22'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2	bg-blue-50">عيار 22</td>
+            <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 22</td>
           </tr>
         `;
 
@@ -256,7 +269,7 @@
           <tr>
             ${tdCell('karat21-buy', bidGram21, prevPrices['21'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             ${tdCell('karat21-sell', askGram21, prevPrices['21'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2	bg-blue-50">عيار 21</td>
+            <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 21</td>
           </tr>
         `;
 
@@ -264,8 +277,8 @@
         rows += `
           <tr>
             ${tdCell('karat18-buy', bidGram18, prevPrices['18'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('karat18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.svg.png"	class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2	bg-blue-50">عيار 18</td>
+            ${tdCell('karat18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 18</td>
           </tr>
         `;
 
