@@ -100,12 +100,13 @@
 
     // إرجاع القيمة من GET بدون كاش
     async function fetchAdjustments() {
-      try {
-        const resp = await fetch(ADJUSTMENTS_API_URL, { cache: 'no-store' });
-        return resp.ok ? await resp.json() : {};
-      } catch (err) {
-        console.error('خطأ في جلب تعديلات الأسعار من الخادم:', err);
-        return {};
+  try {
+    // نستخدم المسار النسبي (no-store لتفادي الكاش)
+    const resp = await fetch(ADJUSTMENTS_API_URL, { cache: 'no-store' });
+    return resp.ok ? await resp.json() : {};
+  } catch (err) {
+    console.error('خطأ في جلب تعديلات الأسعار من الخادم:', err);
+    return {};
       }
     }
 
