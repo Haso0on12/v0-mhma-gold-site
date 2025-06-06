@@ -32,7 +32,7 @@
 </head>
 <body class="bg-white text-gray-900">
 
-  <!-- الهيدر مع الشعار في المنتصف كما كان أولاً -->
+  <!-- الهيدر مع الشعار في المنتصف -->
   <header class="bg-blue-50 text-white px-4 relative flex items-center justify-center" style="height: 200px;">
     <img src="logo.png" alt="MHMA Logo"
          class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
@@ -52,26 +52,19 @@
         <div id="current-time">--:-- ص/م</div>
       </div>
 
-      <!-- وضع الشعار الصغير أولاً والجدول بعدها ليظهر الشعار في الجهة اليسرى -->
-      <div class="flex flex-col md:flex-row justify-center items-start gap-6">
-        <!-- الشعار الصغير بجانب الجدول (على اليسار في العرض الكبير) -->
-        <div class="flex-shrink-0 flex justify-center md:justify-start">
-          <img src="logo.png" alt="MHMA Logo Small" class="h-20 w-auto" />
-        </div>
-        <!-- الجدول -->
-        <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden">
-          <thead>
-            <tr>
-              <th class="py-3 px-5 border bg-blue-50 text-gray-800">الشراء</th>
-              <th class="py-3 px-5 border bg-blue-50 text-gray-800">البيع</th>
-              <th class="py-3 px-5 border bg-blue-50 text-gray-800">العيار</th>
-            </tr>
-          </thead>
-          <tbody id="gold-prices" class="text-lg">
-            <tr><td colspan="3" class="py-6">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- الجدول فقط بدون شعار صغير بجانبه -->
+      <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden mx-auto">
+        <thead>
+          <tr>
+            <th class="py-3 px-5 border bg-blue-50 text-gray-800">الشراء</th>
+            <th class="py-3 px-5 border bg-blue-50 text-gray-800">البيع</th>
+            <th class="py-3 px-5 border bg-blue-50 text-gray-800">العيار</th>
+          </tr>
+        </thead>
+        <tbody id="gold-prices" class="text-lg">
+          <tr><td colspan="3" class="py-6">Loading...</td></tr>
+        </tbody>
+      </table>
 
       <p class="text-sm mt-4 text-gray-600 text-center">
         الأونصة بالـ USD، والجرام بالـ SAR (نشتقّ منه أسعار شراء/بيع بحسب العيار).
