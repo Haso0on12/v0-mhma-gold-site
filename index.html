@@ -19,6 +19,13 @@
     #current-time {
       @apply text-xl font-bold text-gray-800 bg-gray-100 rounded-lg px-4 py-1 shadow-sm;
     }
+    /* اجعل خلفية عمود العيار والنص داخلها باللون الأزرق المستخدم */
+    .karat-cell {
+      @apply bg-blue-50;
+    }
+    .karat-header, .price-header {
+      @apply bg-blue-50 text-gray-800;
+    }
   </style>
 </head>
 <body class="bg-white text-gray-900">
@@ -42,11 +49,11 @@
       </div>
 
       <table class="min-w-full bg-white border border-gray-200 text-center">
-        <thead class="bg-gray-100">
+        <thead class="karat-header">
           <tr>
-            <th class="py-2 px-4 border">الشراء</th>
-            <th class="py-2 px-4 border">البيع</th>
-            <th class="py-2 px-4 border">العيار</th>
+            <th class="py-2 px-4 border price-header">الشراء</th>
+            <th class="py-2 px-4 border price-header">البيع</th>
+            <th class="py-2 px-4 border karat-header">العيار</th>
           </tr>
         </thead>
         <tbody id="gold-prices" class="text-lg">
@@ -55,7 +62,7 @@
       </table>
 
       <p class="text-sm mt-2 text-gray-600 text-center">
-        (  أسعار شراء/بيع بحسب العيار)
+        الأونصة بالـ USD، والجرام بالـ SAR (نشتقّ منه أسعار شراء/بيع بحسب العيار).
       </p>
     </div>
   </main>
@@ -225,7 +232,7 @@
           <tr class="bg-gray-50 font-bold">
             ${tdCell('ounce-buy', finalBidOunceUSD, prevPrices.ounce.bid, '$ ')}
             ${tdCell('ounce-sell', finalAskOunceUSD, prevPrices.ounce.ask, '$ ')}
-            <td class="border py-2">أونصة</td>
+            <td class="border py-2 karat-cell">أونصة</td>
           </tr>
         `;
 
@@ -234,7 +241,7 @@
           <tr>
             ${tdCell('karat24-buy', bidGram24, prevPrices['24'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             ${tdCell('karat24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2">عيار 24</td>
+            <td class="border py-2 karat-cell">عيار 24</td>
           </tr>
         `;
 
@@ -243,7 +250,7 @@
           <tr>
             ${tdCell('karat22-buy', bidGram22, prevPrices['22'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             ${tdCell('karat22-sell', askGram22, prevPrices['22'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2">عيار 22</td>
+            <td class="border py-2 karat-cell">عيار 22</td>
           </tr>
         `;
 
@@ -252,7 +259,7 @@
           <tr>
             ${tdCell('karat21-buy', bidGram21, prevPrices['21'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             ${tdCell('karat21-sell', askGram21, prevPrices['21'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2">عيار 21</td>
+            <td class="border py-2 karat-cell">عيار 21</td>
           </tr>
         `;
 
@@ -261,7 +268,7 @@
           <tr>
             ${tdCell('karat18-buy', bidGram18, prevPrices['18'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             ${tdCell('karat18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            <td class="border py-2">عيار 18</td>
+            <td class="border py-2 karat-cell">عيار 18</td>
           </tr>
         `;
 
