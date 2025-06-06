@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <title>تعديل الأسعار</title>
+  <title>تعديل أسعار الذهب</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -11,16 +11,19 @@
   <style>
     body { font-family: 'Cairo', sans-serif; background: #f0f4f8; }
     #content-wrapper {
-      background: #fff; border-radius: .5rem;
+      background: #fff;
+      border-radius: .5rem;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 2rem; max-width: 600px; margin: 2rem auto;
+      padding: 2rem;
+      max-width: 600px;
+      margin: 2rem auto;
     }
     input { text-align: center; border:1px solid #ccc; border-radius:.25rem; padding:.5rem; width:80px; }
   </style>
 </head>
 <body>
   <div id="content-wrapper">
-    <h2 class="text-2xl font-bold text-center mb-6">تعديل الأسعار</h2>
+    <h2 class="text-2xl font-bold text-center mb-6">تعديل أسعار الذهب</h2>
     <table class="w-full border text-center">
       <thead>
         <tr class="bg-blue-100 text-sm">
@@ -30,7 +33,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- sop: oz, 24, 22, 21, 18 -->
         <tr>
           <td class="border py-2 font-semibold">أونصة</td>
           <td class="border py-2"><input type="number" id="adj_oz_buy" /></td>
@@ -68,7 +70,7 @@
   <script>
     const API_URL = '/api/adjustments';
 
-    // تحميل التعديلات من الخادم وملء الحقول
+    // تحميل التعديلات من الخادم
     async function loadAdjustments() {
       try {
         const resp = await fetch(API_URL);
@@ -83,7 +85,7 @@
       }
     }
 
-    // إرسال التعديلات إلى الخادم عبر POST
+    // إرسال التعديلات إلى الخادم
     async function saveAdjustments() {
       const payload = {};
       ['oz','24','22','21','18'].forEach(k => {
