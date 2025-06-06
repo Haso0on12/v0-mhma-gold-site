@@ -41,7 +41,8 @@
 
   <!-- الهيدر مع شعار واحد -->
   <header class="bg-blue-50 text-white relative flex items-center justify-center" style="height: 200px;">
-    <img src="logo.png" alt="MHMA Logo"
+    <!-- لاحظ أن الشعار يجب أن يكون في public/logo.png -->
+    <img src="/logo.png" alt="MHMA Logo"
          class="h-32 sm:h-48 md:h-56 lg:h-64"
          style="max-width: none;" />
   </header>
@@ -49,7 +50,9 @@
   <main class="px-4 py-6 flex justify-center">
     <div id="content-wrapper" class="w-full max-w-xl mx-4">
       <!-- عنوان البطاقة -->
-      <h2 class="text-xl sm:text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
+      <h2 class="text-xl sm:text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">
+        أسعار الذهب (مباشرة)
+      </h2>
 
       <!-- الدائرة والساعة فقط -->
       <div id="connection-status" class="flex items-center justify-center gap-2 mb-6">
@@ -78,7 +81,7 @@
       </div>
 
       <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">
-           Prices are in Saudi Riyals (SAR)
+        Prices are in Saudi Riyals (SAR)
       </p>
     </div>
   </main>
@@ -105,26 +108,21 @@
   </footer>
 
   <script>
-    // عناصر الدائرة والوقت والجدول
-    const circle = document.getElementById('status-circle');
-    const timeDiv = document.getElementById('current-time');
-    const pricesTable = document.getElementById('gold-prices');
+    // رابط الـ API لقراءة التعديلات من Vercel
+    const ADJUSTMENTS_API_URL = 'https://v0-mhma-gold-site.vercel.app/api/adjustments';
 
-    // مفاتيح وعناوين GoldAPI
-    const GOLDAPI_KEY    = "goldapi-jzk9smbg824oq-io";
-    const GOLDAPI_URL_USD = "https://www.goldapi.io/api/XAU/USD";
-    const GOLDAPI_URL_SAR = "https://www.goldapi.io/api/XAU/SAR";
+    // دالة لجلب التعديلات من الـ API
+    async function fetchAdjustments() {
+      try {
+        const resp = await fetch(ADJUSTMENTS_API_URL);
+        return resp.ok ? await resp.json() : {};
+      } catch (err) {
+        console.error('خطأ في جلب تعديلات الأسعار من السيرفر:', err);
+        return {};
+      }
+    }
 
-    // حفظ الأسعار السابقة لتمييز الارتفاع والهبوط
-    const prevPrices = {
-      ounce: { bid: null, ask: null },
-      '24':   { bid: null, ask: null },
-      '22':   { bid: null, ask: null },
-      '21':   { bid: null, ask: null },
-      '18':   { bid: null, ask: null }
-    };
-
-    // تحديث الساعة بتنسيق 12 ساعة بتوقيت الرياض
+    // دالة تحديث الساعة بتنسيق 12 ساعة بتوقيت الرياض
     function updateClock() {
       const now = new Date();
       const options = {
@@ -134,18 +132,23 @@
         hour12: true,
         timeZone: 'Asia/Riyadh'
       };
-      const formatted = new Intl.DateTimeFormat('ar-EG', options).format(now);
-      timeDiv.textContent = formatted;
+      document.getElementById('current-time').textContent =
+        new Intl.DateTimeFormat('ar-EG', options).format(now);
     }
 
-    // جلب الأسعار وتحديث الجدول وتلوين الدائرة
+    // دالة لجلب الأسعار وتحديث الجدول وتلوين الدائرة
     async function fetchGoldPrice() {
-      // أثناء التحميل: دائرة صفراء
+      const circle = document.getElementById('status-circle');
       circle.classList.remove('bg-green-500', 'bg-red-500');
       circle.classList.add('bg-yellow-400');
 
       try {
-        // جلب سعر الأونصة بالدولار
+        // 1. جلب أسعار الأونصة من GoldAPI
+        const GOLDAPI_KEY    = "goldapi-jzk9smbg824oq-io";
+        const GOLDAPI_URL_USD = "https://www.goldapi.io/api/XAU/USD";
+        const GOLDAPI_URL_SAR = "https://www.goldapi.io/api/XAU/SAR";
+
+        // جلب سعر الأونصة (USD)
         const respUSD = await fetch(GOLDAPI_URL_USD, {
           method: "GET",
           headers: {
@@ -165,7 +168,7 @@
           askOunceUSD = midUSD;
         }
 
-        // جلب سعر الجرام بالريال
+        // جلب سعر الجرام (SAR)
         const respSAR = await fetch(GOLDAPI_URL_SAR, {
           method: "GET",
           headers: {
@@ -175,32 +178,31 @@
         });
         const dataSAR = await respSAR.json();
 
-        const midGram24k = parseFloat(dataSAR.price_gram_24k  || 0);
-        const midGram22k = parseFloat(dataSAR.price_gram_22k  || 0);
-        const midGram21k = parseFloat(dataSAR.price_gram_21k  || 0);
-        const midGram18k = parseFloat(dataSAR.price_gram_18k  || 0);
+        const midGram24k = parseFloat(dataSAR.price_gram_24k || 0);
+        const midGram22k = parseFloat(dataSAR.price_gram_22k || 0);
+        const midGram21k = parseFloat(dataSAR.price_gram_21k || 0);
+        const midGram18k = parseFloat(dataSAR.price_gram_18k || 0);
 
-        // قراءة التعديلات من localStorage إن وجدت
-        const adjOunceBuy  = parseFloat(localStorage.getItem('adj_oz_buy')  || 0);
-        const adjOunceSell = parseFloat(localStorage.getItem('adj_oz_sell') || 0);
+        // 2. جلب التعديلات (adjustments) من الـ API الخاص بـ Vercel
+        const adjustments = await fetchAdjustments();
+        console.log(">>> adjustments JSON:", adjustments);
 
-        const adj24Buy  = parseFloat(localStorage.getItem('adj_24_buy')  || 0);
-        const adj24Sell = parseFloat(localStorage.getItem('adj_24_sell') || 0);
+        const adjOunceBuy  = adjustments.oz_buy  || 0;
+        const adjOunceSell = adjustments.oz_sell || 0;
+        const adj24Buy     = adjustments['24_buy']  || 0;
+        const adj24Sell    = adjustments['24_sell'] || 0;
+        const adj22Buy     = adjustments['22_buy']  || 0;
+        const adj22Sell    = adjustments['22_sell'] || 0;
+        const adj21Buy     = adjustments['21_buy']  || 0;
+        const adj21Sell    = adjustments['21_sell'] || 0;
+        const adj18Buy     = adjustments['18_buy']  || 0;
+        const adj18Sell    = adjustments['18_sell'] || 0;
 
-        const adj22Buy  = parseFloat(localStorage.getItem('adj_22_buy')  || 0);
-        const adj22Sell = parseFloat(localStorage.getItem('adj_22_sell') || 0);
-
-        const adj21Buy  = parseFloat(localStorage.getItem('adj_21_buy')  || 0);
-        const adj21Sell = parseFloat(localStorage.getItem('adj_21_sell') || 0);
-
-        const adj18Buy  = parseFloat(localStorage.getItem('adj_18_buy')  || 0);
-        const adj18Sell = parseFloat(localStorage.getItem('adj_18_sell') || 0);
-
-        // حساب الأسعار النهائية للأونصة بالـ USD
+        // 3. حساب الأسعار النهائية للأونصة بالـ USD
         const finalBidOunceUSD = parseFloat((bidOunceUSD + adjOunceBuy).toFixed(2));
         const finalAskOunceUSD = parseFloat((askOunceUSD + adjOunceSell).toFixed(2));
 
-        // حساب فرق الأونصة بالريال لاشتقاق فروق الجرام
+        // 4. حساب فروق الجرام بناءً على فروق الأونصة بالـ SAR
         let bidOunceSAR = dataSAR.bid !== undefined ? parseFloat(dataSAR.bid) : null;
         let askOunceSAR = dataSAR.ask !== undefined ? parseFloat(dataSAR.ask) : null;
         if (bidOunceSAR === null || askOunceSAR === null) {
@@ -214,40 +216,40 @@
         const GRAMS_PER_OUNCE = 31.1035;
         const spreadPerGram = spreadOunceSAR / GRAMS_PER_OUNCE;
 
-        // حساب أسعار شراء/بيع للجرام لكل عيار بالـ SAR
-        const spreadGram24 = spreadPerGram * (24 / 24);
-        const bidGram24 = parseFloat((midGram24k - spreadGram24 + adj24Buy).toFixed(2));
-        const askGram24 = parseFloat((midGram24k + spreadGram24 + adj24Sell).toFixed(2));
+        // 5. حساب أسعار شراء/بيع كل عيار بالـ SAR
+        const bidGram24 = parseFloat((midGram24k - (spreadPerGram * (24/24)) + adj24Buy).toFixed(2));
+        const askGram24 = parseFloat((midGram24k + (spreadPerGram * (24/24)) + adj24Sell).toFixed(2));
 
-        const spreadGram22 = spreadPerGram * (22 / 24);
-        const bidGram22 = parseFloat((midGram22k - spreadGram22 + adj22Buy).toFixed(2));
-        const askGram22 = parseFloat((midGram22k + spreadGram22 + adj22Sell).toFixed(2));
+        const bidGram22 = parseFloat((midGram22k - (spreadPerGram * (22/24)) + adj22Buy).toFixed(2));
+        const askGram22 = parseFloat((midGram22k + (spreadPerGram * (22/24)) + adj22Sell).toFixed(2));
 
-        const spreadGram21 = spreadPerGram * (21 / 24);
-        const bidGram21 = parseFloat((midGram21k - spreadGram21 + adj21Buy).toFixed(2));
-        const askGram21 = parseFloat((midGram21k + spreadGram21 + adj21Sell).toFixed(2));
+        const bidGram21 = parseFloat((midGram21k - (spreadPerGram * (21/24)) + adj21Buy).toFixed(2));
+        const askGram21 = parseFloat((midGram21k + (spreadPerGram * (21/24)) + adj21Sell).toFixed(2));
 
-        const spreadGram18 = spreadPerGram * (18 / 24);
-        const bidGram18 = parseFloat((midGram18k - spreadGram18 + adj18Buy).toFixed(2));
-        const askGram18 = parseFloat((midGram18k + spreadGram18 + adj18Sell).toFixed(2));
+        const bidGram18 = parseFloat((midGram18k - (spreadPerGram * (18/24)) + adj18Buy).toFixed(2));
+        const askGram18 = parseFloat((midGram18k + (spreadPerGram * (18/24)) + adj18Sell).toFixed(2));
 
-        // بناء صفوف الجدول
-        let rows = "";
-
+        // 6. دالة مساعدة لإنشاء خلايا الجدول
         function tdCell(idKey, newValue, prevValue, prefix = "") {
           let colorClass = "";
           if (prevValue !== null) {
-            if (newValue > prevPrices[idKey.split('-')[0]].bid) colorClass = "text-green-500";
-            else if (newValue < prevPrices[idKey.split('-')[0]].bid) colorClass = "text-red-500";
+            if (newValue > prevValue) colorClass = "text-green-500";
+            else if (newValue < prevValue) colorClass = "text-red-500";
           }
           setTimeout(() => {
             const cell = document.getElementById(idKey);
             if (cell) cell.classList.remove("text-green-500", "text-red-500");
           }, 500);
-          return `<td id="${idKey}" class="border py-2 text-sm sm:text-base price-cell ${colorClass}">${prefix}${newValue.toFixed(2)}</td>`;
+
+          return `<td id="${idKey}" class="border py-2 text-sm sm:text-base price-cell ${colorClass}">
+                    ${prefix}${newValue.toFixed(2)}
+                  </td>`;
         }
 
-        // صف الأونصة (USD)
+        // 7. بناء صفوف الجدول باستخدام الرمز المناسب لكل عيار
+        let rows = "";
+
+        // صف الأونصة (USD) مع رمز $
         rows += `
           <tr class="bg-gray-50 font-semibold">
             ${tdCell('ounce-buy', finalBidOunceUSD, prevPrices.ounce.bid, '$ ')}
@@ -256,43 +258,83 @@
           </tr>
         `;
 
-        // صف 24 عيار
+        // صف عيار 24 (أيقونة الريال)
         rows += `
           <tr>
-            ${tdCell('24-buy', bidGram24, prevPrices['24'].bid, '<img src="Saudi_Riyal_Symbol.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell(
+              '24-buy',
+              bidGram24,
+              prevPrices['24'].bid,
+              '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" alt="ر.س" /> '
+            )}
+            ${tdCell(
+              '24-sell',
+              askGram24,
+              prevPrices['24'].ask,
+              '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" alt="ر.س" /> '
+            )}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 24</td>
           </tr>
         `;
 
-        // صف 22 عيار
+        // صف عيار 22
         rows += `
           <tr>
-            ${tdCell('22-buy', bidGram22, prevPrices['22'].bid, '<img src="Saudi_Riyal_Symbol.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('22-sell', askGram22, prevPrices['22'].ask, '<img src="Saudi_Riyal_Symbol.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell(
+              '22-buy',
+              bidGram22,
+              prevPrices['22'].bid,
+              '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" alt="ر.س" /> '
+            )}
+            ${tdCell(
+              '22-sell',
+              askGram22,
+              prevPrices['22'].ask,
+              '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" alt="ر.س" /> '
+            )}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 22</td>
           </tr>
         `;
 
-        // صف 21 عيار
+        // صف عيار 21
         rows += `
           <tr>
-            ${tdCell('21-buy', bidGram21, prevPrices['21'].bid, '<img src="Saudi_Riyal_Symbol.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('21-sell', askGram21, prevPrices['21'].ask, '<img src="Saudi_Riyal_Symbol.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell(
+              '21-buy',
+              bidGram21,
+              prevPrices['21'].bid,
+              '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" alt="ر.س" /> '
+            )}
+            ${tdCell(
+              '21-sell',
+              askGram21,
+              prevPrices['21'].ask,
+              '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" alt="ر.س" /> '
+            )}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 21</td>
           </tr>
         `;
 
-        // صف 18 عيار
+        // صف عيار 18
         rows += `
           <tr>
-            ${tdCell('18-buy', bidGram18, prevPrices['18'].bid, '<img src="Saudi_Riyal_Symbol.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell(
+              '18-buy',
+              bidGram18,
+              prevPrices['18'].bid,
+              '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" alt="ر.س" /> '
+            )}
+            ${tdCell(
+              '18-sell',
+              askGram18,
+              prevPrices['18'].ask,
+              '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" alt="ر.س" /> '
+            )}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 18</td>
           </tr>
         `;
 
-        // تحديث prevPrices
+        // 8. تحديث prevPrices
         prevPrices.ounce.bid = finalBidOunceUSD;
         prevPrices.ounce.ask = finalAskOunceUSD;
         prevPrices['24'].bid = bidGram24;
@@ -304,15 +346,16 @@
         prevPrices['18'].bid = bidGram18;
         prevPrices['18'].ask = askGram18;
 
-        pricesTable.innerHTML = rows;
+        // 9. عرض الصفوف في الجدول
+        document.getElementById('gold-prices').innerHTML = rows;
 
         // بعد التحميل بنجاح: دائرة خضراء
         circle.classList.remove('bg-yellow-400', 'bg-red-500');
         circle.classList.add('bg-green-500');
       } catch (error) {
         console.error("خطأ في جلب البيانات:", error);
-        pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
-        // عند الفشل: دائرة حمراء
+        document.getElementById('gold-prices').innerHTML =
+          '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
         circle.classList.remove('bg-green-500', 'bg-yellow-400');
         circle.classList.add('bg-red-500');
       }
@@ -322,7 +365,7 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // جلب الأسعار أولًا ثم تحديث كل ثانيتين
+    // استدعاء أولي لجلب الأسعار ثم كل ثانيتين
     fetchGoldPrice();
     setInterval(fetchGoldPrice, 2000);
   </script>
