@@ -41,7 +41,7 @@
 
   <!-- الهيدر مع شعار واحد -->
   <header class="bg-blue-50 text-white relative flex items-center justify-center" style="height: 200px;">
-    <img src="logo.png" alt="MHMA Logo"
+    <img src="/logo.png" alt="MHMA Logo"
          class="h-32 sm:h-48 md:h-56 lg:h-64"
          style="max-width: none;" />
   </header>
@@ -105,7 +105,7 @@
   </footer>
 
   <script>
-    // رابط الـ API الخاص بالتعديلات (استبدل بالرابط الفعلي لديك)
+    // رابط الـ API لقراءة التعديلات من Vercel
     const ADJUSTMENTS_API_URL = 'https://v0-mhma-gold-site.vercel.app/api/adjustments';
 
     // دالة لجلب التعديلات من الـ API
@@ -135,13 +135,12 @@
 
     // دالة لجلب الأسعار وتحديث الجدول وتلوين الدائرة
     async function fetchGoldPrice() {
-      // أثناء التحميل: دائرة صفراء
       const circle = document.getElementById('status-circle');
       circle.classList.remove('bg-green-500', 'bg-red-500');
       circle.classList.add('bg-yellow-400');
 
       try {
-        // جلب بيانات الأونصة بالدولار
+        // جلب بيانات الأونصة من GoldAPI
         const GOLDAPI_KEY = "goldapi-jzk9smbg824oq-io";
         const GOLDAPI_URL_USD = "https://www.goldapi.io/api/XAU/USD";
         const GOLDAPI_URL_SAR = "https://www.goldapi.io/api/XAU/SAR";
@@ -165,7 +164,7 @@
           askOunceUSD = midUSD;
         }
 
-        // جلب بيانات الجرام بالريال
+        // جلب بيانات الجرام من GoldAPI بالريال
         const respSAR = await fetch(GOLDAPI_URL_SAR, {
           method: "GET",
           headers: {
@@ -180,7 +179,7 @@
         const midGram21k = parseFloat(dataSAR.price_gram_21k || 0);
         const midGram18k = parseFloat(dataSAR.price_gram_18k || 0);
 
-        // جلب التعديلات من الـ API
+        // جلب التعديلات (adjustments) من الـ API الخاص بـ Vercel
         const adjustments = await fetchAdjustments();
 
         const adjOunceBuy  = adjustments.oz_buy || 0;
@@ -229,7 +228,7 @@
         const bidGram18    = parseFloat((midGram18k - spreadGram18 + adj18Buy).toFixed(2));
         const askGram18    = parseFloat((midGram18k + spreadGram18 + adj18Sell).toFixed(2));
 
-        // بناء صفوف الجدول
+        // بناء صفوف الجدول في الـ DOM
         const tbody = document.getElementById('gold-prices');
         tbody.innerHTML = `
           <tr class="bg-gray-50 font-semibold">
@@ -266,7 +265,6 @@
         console.error("خطأ في جلب البيانات:", error);
         const tbody = document.getElementById('gold-prices');
         tbody.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
-        // عند الفشل: دائرة حمراء
         const circle = document.getElementById('status-circle');
         circle.classList.remove('bg-green-500', 'bg-yellow-400');
         circle.classList.add('bg-red-500');
