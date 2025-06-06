@@ -53,7 +53,9 @@
 
       <!-- الدائرة والساعة فقط -->
       <div id="connection-status" class="flex items-center justify-center gap-2 mb-6">
+        <!-- الدائرة: bg-yellow-400 أثناء التحميل، bg-green-500 عند النجاح، bg-red-500 عند الفشل -->
         <span id="status-circle" class="w-3 h-3 rounded-full bg-yellow-400"></span>
+        <!-- الساعة -->
         <div id="current-time" class="text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm">
           --:-- ص/م
         </div>
@@ -96,8 +98,8 @@
       <a href="https://wa.me/966530091668" target="_blank" aria-label="WhatsApp">
         <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp">
       </a>
-      <a href="https://www.mhma-goldprice.com/" target="_blank" aria-label="Website">
-        <img src="https://img.icons8.com/ios-filled/50/000000/domain.png" alt="Website">
+      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank" aria-label="Google Maps">
+        <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Google Maps">
       </a>
     </div>
   </footer>
@@ -235,8 +237,8 @@
         function tdCell(idKey, newValue, prevValue, prefix = "") {
           let colorClass = "";
           if (prevValue !== null) {
-            if (newValue > prevValue) colorClass = "text-green-500";
-            else if (newValue < prevValue) colorClass = "text-red-500";
+            if (newValue > prevPrices[idKey.split('-')[0]].bid) colorClass = "text-green-500";
+            else if (newValue < prevPrices[idKey.split('-')[0]].bid) colorClass = "text-red-500";
           }
           setTimeout(() => {
             const cell = document.getElementById(idKey);
@@ -254,38 +256,38 @@
           </tr>
         `;
 
-        // صف 24 عيار (SAR)
+        // صف 24 عيار
         rows += `
           <tr>
-            ${tdCell('karat24-buy', bidGram24, prevPrices['24'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('karat24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('24-buy', bidGram24, prevPrices['24'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 24</td>
           </tr>
         `;
 
-        // صف 22 عيار (SAR)
+        // صف 22 عيار
         rows += `
           <tr>
-            ${tdCell('karat22-buy', bidGram22, prevPrices['22'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('karat22-sell', askGram22, prevPrices['22'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('22-buy', bidGram22, prevPrices['22'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('22-sell', askGram22, prevPrices['22'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 22</td>
           </tr>
         `;
 
-        // صف 21 عيار (SAR)
+        // صف 21 عيار
         rows += `
           <tr>
-            ${tdCell('karat21-buy', bidGram21, prevPrices['21'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('karat21-sell', askGram21, prevPrices['21'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('21-buy', bidGram21, prevPrices['21'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('21-sell', askGram21, prevPrices['21'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 21</td>
           </tr>
         `;
 
-        // صف 18 عيار (SAR)
+        // صف 18 عيار
         rows += `
           <tr>
-            ${tdCell('karat18-buy', bidGram18, prevPrices['18'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('karat18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('18-buy', bidGram18, prevPrices['18'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 18</td>
           </tr>
         `;
@@ -302,7 +304,6 @@
         prevPrices['18'].bid = bidGram18;
         prevPrices['18'].ask = askGram18;
 
-        // عرض الصفوف في الجدول
         pricesTable.innerHTML = rows;
 
         // بعد التحميل بنجاح: دائرة خضراء
