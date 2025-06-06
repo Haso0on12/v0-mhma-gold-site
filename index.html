@@ -11,7 +11,7 @@
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background-color: #f9fafb; /* خلفية رمادية فاتحة خفيفة للصفحة */
+      background-color: #f9fafb; /* لون خلفية خفيف */
     }
     .price-cell {
       transition: color 0.3s ease;
@@ -20,37 +20,32 @@
     #current-time {
       @apply text-xl font-bold text-gray-800 bg-gray-100 rounded-lg px-4 py-1 shadow-sm;
     }
-    /* الحاوية الرئيسية (#content-wrapper) تأخذ الشعار كخلفية */
+    /* حاوية المحتوى الرئيسية */
     #content-wrapper {
-      position: relative;       /* حتى يتمكن الشعار من التمركز خلف المحتوى */
-      background-image: url('logo.png');
-      background-position: center top; /* يظهر الشعار في المنتصف أفقيًا، وقريب من الأعلى */
-      background-repeat: no-repeat;
-      background-size: 180px;   /* حجم الشعار؛ يمكن تعديل القيمة حسب حاجتك */
-      /* نجعل خلفية الحاوية نفسها بيضاء شبه شفافة، كي يبدو الشعار كخلفية خفيفة تحتها */
-      background-color: rgba(255, 255, 255, 0.92);
+      background-color: #ffffff;
       border-radius: 0.5rem;     /* rounded-md */
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* ظل خفيف */
-      padding-top: 100px;       /* مسافة من الأعلى لإعطاء مجال للشعار كي يظهر أسفل العنوان */
+      padding: 2rem;
     }
   </style>
 </head>
 <body class="bg-white text-gray-900">
 
-  <header class="bg-blue-50 text-white px-4 relative flex items-center justify-between" style="height: 200px;">
-    <!-- لا حاجة لعرض الشعار هنا؛ سيظهر في خلفية الحاوية الرئيسية -->
-    <h1 class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-blue-800">
-      أسعار الذهب (مباشرة)
-    </h1>
+  <!-- الهيدر يبقى بسيطاً أو مخفياً لو أردت -->
+  <header class="bg-blue-50 text-white px-4 relative flex items-center justify-center" style="height: 150px;">
+    <!-- نجعل الهيدر لونه أزرق فاتح فقط ولا نعرض الشعار هنا -->
   </header>
 
-  <main class="p-6 flex justify-center -mt-16">
-    <!-- استخدمنا margin-top سالبة (-mt-16) لرفع البطاقة قليلاً فوق الهيدر -->
+  <main class="p-6 flex justify-center -mt-20">
     <div id="content-wrapper" class="w-full max-w-2xl mx-4">
-      <!-- إضافة padding داخلي للمحتوى -->
-      <h2 class="text-lg font-semibold mb-4 text-center">تابع الأسعار أدناه</h2>
+      <!-- الشعار ظاهر في المنتصف أعلى البطاقة -->
+      <div class="flex justify-center mb-4">
+        <img src="logo.png" alt="MHMA Logo" class="h-24 w-auto" />
+      </div>
 
-      <div id="connection-status" class="flex flex-col justify-center items-center gap-2 mb-4 text-lg font-semibold">
+      <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
+
+      <div id="connection-status" class="flex flex-col justify-center items-center gap-2 mb-6 text-lg font-semibold">
         <div class="flex items-center gap-2">
           <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
           <span class="text-yellow-600">جارٍ التحميل</span>
@@ -61,17 +56,17 @@
       <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden">
         <thead>
           <tr>
-            <th class="py-2 px-4 border bg-blue-50 text-gray-800">الشراء</th>
-            <th class="py-2 px-4 border bg-blue-50 text-gray-800">البيع</th>
-            <th class="py-2 px-4 border bg-blue-50 text-gray-800">العيار</th>
+            <th class="py-3 px-5 border bg-blue-50 text-gray-800">الشراء</th>
+            <th class="py-3 px-5 border bg-blue-50 text-gray-800">البيع</th>
+            <th class="py-3 px-5 border bg-blue-50 text-gray-800">العيار</th>
           </tr>
         </thead>
         <tbody id="gold-prices" class="text-lg">
-          <tr><td colspan="3" class="py-4">Loading...</td></tr>
+          <tr><td colspan="3" class="py-6">Loading...</td></tr>
         </tbody>
       </table>
 
-      <p class="text-sm mt-3 text-gray-600 text-center">
+      <p class="text-sm mt-4 text-gray-600 text-center">
         الأونصة بالـ USD، والجرام بالـ SAR (نشتقّ منه أسعار شراء/بيع بحسب العيار).
       </p>
     </div>
