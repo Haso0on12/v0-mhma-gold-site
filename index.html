@@ -11,7 +11,11 @@
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background-color: #f9fafb; /* لون خلفية خفيف */
+      /* ضع الشعار كخلفية للجسم بالكامل */
+      background-image: url('logo.png');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 150px;
     }
     .price-cell {
       transition: color 0.3s ease;
@@ -20,63 +24,67 @@
     #current-time {
       @apply text-xl font-bold text-gray-800 bg-gray-100 rounded-lg px-4 py-1 shadow-sm;
     }
-    /* حاوية المحتوى الرئيسية */
+    /* نقوم بإضفاء خلفية شبه شفافة على البطاقة الداخلية حتى يظهر الشعار خلفها قليلًا */
     #content-wrapper {
-      background-color: #ffffff;
-      border-radius: 0.5rem;     /* rounded-md */
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* ظل خفيف */
-      padding: 2rem;
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 0.5rem; /* rounded-md */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-md */
     }
   </style>
 </head>
 <body class="bg-white text-gray-900">
 
-  <!-- الهيدر يبقى بسيطاً أو مخفياً لو أردت -->
-  <header class="bg-blue-50 text-white px-4 relative flex items-center justify-center" style="height: 150px;">
-    <!-- نجعل الهيدر لونه أزرق فاتح فقط ولا نعرض الشعار هنا -->
+  <header class="bg-blue-50 text-white px-4 relative flex items-center justify-between" style="height: 200px;">
+    <img src="logo.png" alt="MHMA Logo"
+         class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+         style="height: 200px; max-width: none;" />
   </header>
 
-  <main class="p-6 flex justify-center -mt-20">
-    <div id="content-wrapper" class="w-full max-w-2xl mx-4">
-      <!-- الشعار ظاهر في المنتصف أعلى البطاقة -->
-      <div class="flex justify-center mb-4">
-        <img src="logo.png" alt="MHMA Logo" class="h-24 w-auto" />
-      </div>
+  <main class="p-6 flex justify-center">
+    <!-- صفّح النصيّة هنا شفافة جزئيًا كي يظهر الشعار خلفها في الوسط -->
+    <div id="content-wrapper" class="w-full max-w-2xl p-6">
+      <h2 class="text-xl font-semibold mb-2 text-center">أسعار الذهب (مباشرة)</h2>
 
-      <h2 class="text-2xl font-semibold mb-4 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
-
-      <div id="connection-status" class="flex flex-col justify-center items-center gap-2 mb-6 text-lg font-semibold">
+      <div id="connection-status" class="flex flex-col justify-center items-center gap-2 mb-4 text-lg font-semibold">
         <div class="flex items-center gap-2">
           <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
-          <span class="text-yellow-600">جارٍ التحميل</span>
+          <span class="text-yellow-600">...جارٍ التحميل</span>
         </div>
         <div id="current-time">--:-- ص/م</div>
       </div>
 
-      <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden">
+      <table class="min-w-full bg-white border border-gray-200 text-center">
         <thead>
           <tr>
-            <th class="py-3 px-5 border bg-blue-50 text-gray-800">الشراء</th>
-            <th class="py-3 px-5 border bg-blue-50 text-gray-800">البيع</th>
-            <th class="py-3 px-5 border bg-blue-50 text-gray-800">العيار</th>
+            <th class="py-2 px-4 border bg-blue-50 text-gray-800">الشراء</th>
+            <th class="py-2 px-4 border bg-blue-50 text-gray-800">البيع</th>
+            <th class="py-2 px-4 border bg-blue-50 text-gray-800">العيار</th>
           </tr>
         </thead>
         <tbody id="gold-prices" class="text-lg">
-          <tr><td colspan="3" class="py-6">Loading...</td></tr>
+          <tr><td colspan="3" class="py-4">Loading...</td></tr>
         </tbody>
       </table>
 
-      <p class="text-sm mt-4 text-gray-600 text-center">
+      <p class="text-sm mt-2 text-gray-600 text-center">
         الأونصة بالـ USD، والجرام بالـ SAR (نشتقّ منه أسعار شراء/بيع بحسب العيار).
       </p>
     </div>
   </main>
 
   <footer class="bg-blue-50 text-center text-sm p-4 mt-6">
-    <p>
-      Contact: mhma-alarbash@outlook.com  |  Phone: 0530091668 , 0138997999  
-      |  Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3
-    </p>
+    <p>Contact: mhma-alarbash@outlook.com  |  Phone: 0530091668 , 0138997999  |  Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3</p>
+    <div class="fixed bottom-4 left-4 flex flex-col items-center gap-2">
+      <a href="https://www.instagram.com/mhma_alarbash?igsh=cjgwdmR3Y29wMzU=" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" alt="Instagram" class="w-6 h-6" />
+      </a>
+      <a href="https://wa.me/966530091668" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp" class="w-6 h-6" />
+      </a>
+      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Map" class="w-6 h-6" />
+      </a>
+    </div>
   </footer>
 
   <script>
@@ -96,7 +104,6 @@
       '18':   { bid: null, ask: null }
     };
 
-    // دالة تحديث الوقت بتنسيق 12 ساعة (ص/م) بتوقيت الرياض
     function updateClock() {
       const now = new Date();
       const options = {
@@ -110,9 +117,8 @@
       timeDiv.textContent = formatted;
     }
 
-    // دالة جلب البيانات وعرضها مع تلوين السعر عند التغير
     async function fetchGoldPrice() {
-      // قبل كل جلب، نُظهر حالة "جارٍ التحميل" والوقت الحالي
+      // عرض حالة "جارٍ التحميل"
       statusDiv.innerHTML = `
         <div class="flex items-center gap-2">
           <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
@@ -122,7 +128,7 @@
       `;
 
       try {
-        // 1) جلب بيانات الأونصة بالدولار
+        // جلب بيانات الأونصة بالدولار
         const respUSD = await fetch(GOLDAPI_URL_USD, {
           method: "GET",
           headers: {
@@ -142,7 +148,7 @@
           askOunceUSD = midUSD;
         }
 
-        // 2) جلب بيانات الجرام بالريال
+        // جلب بيانات الجرام بالريال
         const respSAR = await fetch(GOLDAPI_URL_SAR, {
           method: "GET",
           headers: {
@@ -152,12 +158,13 @@
         });
         const dataSAR = await respSAR.json();
 
+        // mid prices للجرام لكل عيار بالـ SAR
         const midGram24k = parseFloat(dataSAR.price_gram_24k  || 0);
         const midGram22k = parseFloat(dataSAR.price_gram_22k  || 0);
         const midGram21k = parseFloat(dataSAR.price_gram_21k  || 0);
         const midGram18k = parseFloat(dataSAR.price_gram_18k  || 0);
 
-        // 3) قراءة التعديلات من localStorage (إن وُجدت)
+        // قراءة التعديلات من localStorage (إن وُجدت)
         const adjOunceBuy  = parseFloat(localStorage.getItem('adj_oz_buy')  || 0);
         const adjOunceSell = parseFloat(localStorage.getItem('adj_oz_sell') || 0);
 
@@ -173,11 +180,11 @@
         const adj18Buy  = parseFloat(localStorage.getItem('adj_18_buy')  || 0);
         const adj18Sell = parseFloat(localStorage.getItem('adj_18_sell') || 0);
 
-        // 4) حساب الأسعار النهائية للأونصة بالـ USD
+        // حساب الأسعار النهائية للأونصة بالـ USD
         const finalBidOunceUSD = parseFloat((bidOunceUSD + adjOunceBuy).toFixed(2));
         const finalAskOunceUSD = parseFloat((askOunceUSD + adjOunceSell).toFixed(2));
 
-        // 5) حساب Spread للأونصة بالـ SAR لاشتقاق فروق الجرام
+        // حساب Spread للأونصة بالريال لاشتقاق فروق الجرام
         let bidOunceSAR = dataSAR.bid !== undefined ? parseFloat(dataSAR.bid) : null;
         let askOunceSAR = dataSAR.ask !== undefined ? parseFloat(dataSAR.ask) : null;
         if (bidOunceSAR === null || askOunceSAR === null) {
@@ -191,7 +198,7 @@
         const GRAMS_PER_OUNCE = 31.1035;
         const spreadPerGram = spreadOunceSAR / GRAMS_PER_OUNCE;
 
-        // 6) حساب أسعار شراء/بيع للجرام لكل عيار بالـ SAR
+        // حساب أسعار شراء/بيع للجرام لكل عيار بالـ SAR
         const spreadGram24 = spreadPerGram * (24 / 24);
         const bidGram24 = parseFloat((midGram24k - spreadGram24 + adj24Buy).toFixed(2));
         const askGram24 = parseFloat((midGram24k + spreadGram24 + adj24Sell).toFixed(2));
@@ -208,7 +215,7 @@
         const bidGram18 = parseFloat((midGram18k - spreadGram18 + adj18Buy).toFixed(2));
         const askGram18 = parseFloat((midGram18k + spreadGram18 + adj18Sell).toFixed(2));
 
-        // 7) بناء صفوف الجدول
+        // بناء صفوف الجدول
         let rows = "";
 
         function tdCell(idKey, newValue, prevValue, prefix = "") {
