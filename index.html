@@ -11,22 +11,25 @@
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background-color: #ffffff; /* الخلفية بيضاء */
+      background-color: #ffffff;
     }
     .price-cell {
       transition: color 0.3s ease;
     }
-    /* ستايل الساعة */
+    /* ستايل الساعة والدائرة */
+    #connection-status {
+      @apply flex items-center justify-center gap-2 mb-6;
+    }
     #current-time {
       @apply text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm;
     }
-    /* حاوية المحتوى الرئيسية */
+    /* حاوية المحتوى */
     #content-wrapper {
       background-color: #ffffff;
-      border-radius: 0.5rem;     /* rounded-md */
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* ظل خفيف */
-      padding: 1.5rem; /* تقليل الحشوة للموبايل */
-      margin-top: -1.5rem; /* تقليل التداخل مع الهيدر للموبايل */
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-top: -1.5rem;
     }
     @media (min-width: 640px) {
       #content-wrapper {
@@ -41,9 +44,8 @@
 </head>
 <body class="bg-white text-gray-900">
 
-  <!-- الهيدر مع الشعار في المنتصف -->
+  <!-- الهيدر مع الشعار -->
   <header class="bg-blue-50 text-white relative flex items-center justify-center" style="height: 200px;">
-    <!-- حجم الشعار أصبح أكبر على الجوال (h-32) وإلى h-48 للشاشات الصغيرة فما فوق -->
     <img src="logo.png" alt="MHMA Logo"
          class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2
                 h-32 sm:h-48 md:h-56 lg:h-64"
@@ -55,15 +57,13 @@
       <!-- عنوان البطاقة -->
       <h2 class="text-xl sm:text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">أسعار الذهب (مباشرة)</h2>
 
-      <div id="connection-status" class="flex flex-col justify-center items-center gap-1 mb-6 text-base sm:text-lg font-semibold">
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
-          <span class="text-yellow-600">جارٍ التحميل</span>
-        </div>
+      <!-- الدائرة والخط -->
+      <div id="connection-status">
+        <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
         <div id="current-time">--:-- ص/م</div>
       </div>
 
-      <!-- حاوية تجعل الجدول أفقي قابل للتمرير في الموبايل -->
+      <!-- جدول الأسعار -->
       <div class="overflow-x-auto">
         <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden mx-auto">
           <thead>
@@ -80,20 +80,18 @@
       </div>
 
       <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">
-             Prices are in Saudi Riyals (SAR)
+        الأونصة بالـ USD، والجرام بالـ SAR (نشتقّ منه أسعار شراء/بيع بحسب العيار).
       </p>
     </div>
   </main>
 
   <footer class="bg-blue-50 text-center text-xs sm:text-sm p-3 sm:p-4 mt-6">
     <p class="mx-2">
-      Contact: mhma-alarbash@outlook.com  |  Phone: 0530091668 , 0138997999  
-      |  Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3
+      Contact: mhma-alarbash@outlook.com  |  Phone: 0530091668 , 0138997999  |  Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3
     </p>
   </footer>
 
   <script>
-    const statusDiv   = document.getElementById('connection-status');
     const timeDiv     = document.getElementById('current-time');
     const pricesTable = document.getElementById('gold-prices');
 
@@ -109,7 +107,7 @@
       '18':   { bid: null, ask: null }
     };
 
-    // دالة تحديث الوقت بتنسيق 12 ساعة (ص/م) بتوقيت الرياض
+    // تحديث الساعة بتنسيق 12 ساعة (ص/م) بتوقيت الرياض
     function updateClock() {
       const now = new Date();
       const options = {
@@ -123,19 +121,10 @@
       timeDiv.textContent = formatted;
     }
 
-    // دالة جلب البيانات وعرضها مع تلوين السعر عند التغير
+    // جلب الأسعار وتحديث الجدول
     async function fetchGoldPrice() {
-      // عرض حالة "جارٍ التحميل" والوقت الحالي
-      statusDiv.innerHTML = `
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-yellow-400 inline-block"></span>
-          <span class="text-yellow-600">جارٍ التحميل</span>
-        </div>
-        <div id="current-time">${timeDiv.textContent}</div>
-      `;
-
       try {
-        // 1) جلب بيانات الأونصة بالدولار
+        // جلب سعر الأونصة بالدولار
         const respUSD = await fetch(GOLDAPI_URL_USD, {
           method: "GET",
           headers: {
@@ -155,7 +144,7 @@
           askOunceUSD = midUSD;
         }
 
-        // 2) جلب بيانات الجرام بالريال
+        // جلب سعر الجرام بالريال
         const respSAR = await fetch(GOLDAPI_URL_SAR, {
           method: "GET",
           headers: {
@@ -170,7 +159,7 @@
         const midGram21k = parseFloat(dataSAR.price_gram_21k  || 0);
         const midGram18k = parseFloat(dataSAR.price_gram_18k  || 0);
 
-        // 3) قراءة التعديلات من localStorage (إن وُجدت)
+        // قراءة التعديلات من localStorage إن وجدت
         const adjOunceBuy  = parseFloat(localStorage.getItem('adj_oz_buy')  || 0);
         const adjOunceSell = parseFloat(localStorage.getItem('adj_oz_sell') || 0);
 
@@ -186,11 +175,11 @@
         const adj18Buy  = parseFloat(localStorage.getItem('adj_18_buy')  || 0);
         const adj18Sell = parseFloat(localStorage.getItem('adj_18_sell') || 0);
 
-        // 4) حساب الأسعار النهائية للأونصة بالـ USD
+        // حساب الأسعار النهائية للأونصة بالـ USD
         const finalBidOunceUSD = parseFloat((bidOunceUSD + adjOunceBuy).toFixed(2));
         const finalAskOunceUSD = parseFloat((askOunceUSD + adjOunceSell).toFixed(2));
 
-        // 5) حساب Spread للأونصة بالـ SAR لاشتقاق فروق الجرام
+        // حساب فرق الأونصة بالريال لاشتقاق فروق الجرام
         let bidOunceSAR = dataSAR.bid !== undefined ? parseFloat(dataSAR.bid) : null;
         let askOunceSAR = dataSAR.ask !== undefined ? parseFloat(dataSAR.ask) : null;
         if (bidOunceSAR === null || askOunceSAR === null) {
@@ -204,7 +193,7 @@
         const GRAMS_PER_OUNCE = 31.1035;
         const spreadPerGram = spreadOunceSAR / GRAMS_PER_OUNCE;
 
-        // 6) حساب أسعار شراء/بيع للجرام لكل عيار بالـ SAR
+        // حساب أسعار شراء/بيع للجرام لكل عيار بالـ SAR
         const spreadGram24 = spreadPerGram * (24 / 24);
         const bidGram24 = parseFloat((midGram24k - spreadGram24 + adj24Buy).toFixed(2));
         const askGram24 = parseFloat((midGram24k + spreadGram24 + adj24Sell).toFixed(2));
@@ -221,7 +210,7 @@
         const bidGram18 = parseFloat((midGram18k - spreadGram18 + adj18Buy).toFixed(2));
         const askGram18 = parseFloat((midGram18k + spreadGram18 + adj18Sell).toFixed(2));
 
-        // 7) بناء صفوف الجدول
+        // بناء صفوف الجدول
         let rows = "";
 
         function tdCell(idKey, newValue, prevValue, prefix = "") {
@@ -282,7 +271,7 @@
           </tr>
         `;
 
-        // تحديث prevPrices لكل عنصر
+        // تحديث prevPrices
         prevPrices.ounce.bid = finalBidOunceUSD;
         prevPrices.ounce.ask = finalAskOunceUSD;
         prevPrices['24'].bid = bidGram24;
@@ -296,35 +285,18 @@
 
         // عرض الصفوف في الجدول
         pricesTable.innerHTML = rows;
-
-        // تحديث حالة "تم التحميل" مع الوقت الحالي
-        statusDiv.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
-            <span class="text-green-600">تم تحميل الأسعار</span>
-          </div>
-          <div id="current-time">${timeDiv.textContent}</div>
-        `;
       } catch (error) {
         console.error("خطأ في جلب البيانات أو معالجتها:", error);
         pricesTable.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
-        statusDiv.innerHTML = `
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
-            <span class="text-red-600">تعذّرت عملية التحميل</span>
-          </div>
-          <div id="current-time">${timeDiv.textContent}</div>
-        `;
       }
     }
 
-    // تشغيل الساعة بتنسيق 12 ساعة
+    // عرض الساعة أولًا ثم تحديثها كل ثانية
     updateClock();
     setInterval(updateClock, 1000);
 
-    // تشغيل أول تحميل للأسعار
+    // جلب الأسعار أولًا ثم كل ثانيتين
     fetchGoldPrice();
-    // تحديث الأسعار كل ثانيتين
     setInterval(fetchGoldPrice, 2000);
   </script>
 </body>
