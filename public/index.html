@@ -12,16 +12,18 @@
     body { font-family: 'Cairo', sans-serif; background: #fff; }
     .price-cell { transition: color .3s ease; }
     #content-wrapper {
-      background: #fff; border-radius:.5rem;
+      background: #fff;
+      border-radius:.5rem;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding:1.5rem; margin-top:-1.5rem;
+      padding:1.5rem;
+      margin-top:-1.5rem;
     }
     .social-icons img { width:24px; height:24px; }
   </style>
 </head>
 <body class="bg-white text-gray-900">
 
-  <!-- التقاط الأخطاء العامة -->
+  <!-- التقاط أخطاء الجافاسكربت -->
   <script>
     window.addEventListener('error', e => {
       console.error('Global error caught:', e.error || e.message);
@@ -41,7 +43,9 @@
 
       <div id="connection-status" class="flex items-center justify-center gap-2 mb-6">
         <span id="status-circle" class="w-3 h-3 rounded-full bg-yellow-400"></span>
-        <div id="current-time" class="text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm">--:--</div>
+        <div id="current-time" class="text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm">
+          --:-- ص/م
+        </div>
       </div>
 
       <div class="overflow-x-auto">
@@ -59,7 +63,7 @@
         </table>
       </div>
 
-      <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">Prices are in SAR</p>
+      <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">الأسعار بالريال السعودي (SAR)</p>
     </div>
   </main>
 
@@ -71,9 +75,15 @@
       <div>Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3</div>
     </div>
     <div class="mt-4 flex justify-center space-x-4 social-icons">
-      <a href="https://instagram.com/mhma_alarbash" target="_blank"><img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png"/></a>
-      <a href="https://wa.me/966530091668" target="_blank"><img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png"/></a>
-      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank"><img src="https://img.icons8.com/ios-filled/50/000000/marker.png"/></a>
+      <a href="https://instagram.com/mhma_alarbash" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" alt="Instagram"/>
+      </a>
+      <a href="https://wa.me/966530091668" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp"/>
+      </a>
+      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Maps"/>
+      </a>
     </div>
   </footer>
 
@@ -91,30 +101,31 @@
     function updateClock() {
       const now = new Date();
       timeDiv.textContent =
-        new Intl.DateTimeFormat('ar-EG',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:'Asia/Riyadh'})
-        .format(now);
+        new Intl.DateTimeFormat('ar-EG', {
+          hour:'numeric', minute:'2-digit',
+          hour12:true, timeZone:'Asia/Riyadh'
+        }).format(now);
     }
 
     async function loadAdjustments() {
       try {
         const resp = await fetch(ADJ_API_URL);
-        console.log('🔄 adjustments status:', resp.status);
+        console.log('adjustments status:', resp.status);
         const data = await resp.json();
-        console.log('🔄 adjustments data:', data);
+        console.log('adjustments data:', data);
         return data;
       } catch (err) {
-        console.error('🔴 adjustments fetch failed:', err);
+        console.error('adjustments fetch failed:', err);
         return {};
       }
     }
 
     async function fetchGoldPrice() {
-      console.log('⏳ Starting fetchGoldPrice at', new Date().toLocaleTimeString());
+      console.log('Starting fetchGoldPrice at', new Date().toLocaleTimeString());
       circle.classList.replace('bg-green-500','bg-yellow-400');
       circle.classList.replace('bg-red-500','bg-yellow-400');
 
       const adj = await loadAdjustments();
-      console.log('🔢 using adjustments:', adj);
 
       try {
         const [respUSD, respSAR] = await Promise.all([
@@ -124,47 +135,43 @@
 
         if (!respUSD.ok || !respSAR.ok) {
           const t1 = await respUSD.text(), t2 = await respSAR.text();
-          throw new Error(`Bad status: USD=${respUSD.status}(${t1}), SAR=${respSAR.status}(${t2})`);
+          throw new Error(`Status USD=${respUSD.status}(${t1}), SAR=${respSAR.status}(${t2})`);
         }
 
         const dataUSD = await respUSD.json();
         const dataSAR = await respSAR.json();
-        console.log('Data USD:', dataUSD, 'Data SAR:', dataSAR);
 
-        // استخراج الأسعار
         const bidO  = parseFloat(dataUSD.bid  ?? dataUSD.price ?? dataUSD.xau_price);
         const askO  = parseFloat(dataUSD.ask  ?? dataUSD.price ?? dataUSD.xau_price);
         const g24   = parseFloat(dataSAR.price_gram_24k  || 0);
         const g22   = parseFloat(dataSAR.price_gram_22k  || 0);
         const g21   = parseFloat(dataSAR.price_gram_21k  || 0);
         const g18   = parseFloat(dataSAR.price_gram_18k  || 0);
-        const spread= (parseFloat(dataSAR.ask  ?? dataSAR.price) - parseFloat(dataSAR.bid  ?? dataSAR.price)) / 31.1035;
+        const spread= (parseFloat(dataSAR.ask ?? dataSAR.price) - parseFloat(dataSAR.bid ?? dataSAR.price)) / 31.1035;
 
         const specs = [
-          { k:'ounce', lbl:'أونصة',    bid: bidO+ (parseFloat(adj.oz_buy)||0), ask: askO+ (parseFloat(adj.oz_sell)||0), pre:'$ ' },
-          { k:'24',    lbl:'عيار 24', bid: g24-spread+ (parseFloat(adj['24_buy'])||0), ask: g24+spread+ (parseFloat(adj['24_sell'])||0), pre:'﷼ ' },
-          { k:'22',    lbl:'عيار 22', bid: g22-spread*(22/24)+ (parseFloat(adj['22_buy'])||0), ask: g22+spread*(22/24)+ (parseFloat(adj['22_sell'])||0), pre:'﷼ ' },
-          { k:'21',    lbl:'عيار 21', bid: g21-spread*(21/24)+ (parseFloat(adj['21_buy'])||0), ask: g21+spread*(21/24)+ (parseFloat(adj['21_sell'])||0), pre:'﷼ ' },
-          { k:'18',    lbl:'عيار 18', bid: g18-spread*(18/24)+ (parseFloat(adj['18_buy'])||0), ask: g18+spread*(18/24)+ (parseFloat(adj['18_sell'])||0), pre:'﷼ ' }
+          { k:'ounce', lbl:'أونصة',    bid: bidO + (parseFloat(adj.oz_buy)||0), ask: askO + (parseFloat(adj.oz_sell)||0), pre:'$ ' },
+          { k:'24',    lbl:'عيار 24', bid: g24-spread + (parseFloat(adj['24_buy'])||0), ask: g24+spread + (parseFloat(adj['24_sell'])||0), pre:'﷼ ' },
+          { k:'22',    lbl:'عيار 22', bid: g22-spread*(22/24) + (parseFloat(adj['22_buy'])||0), ask: g22+spread*(22/24) + (parseFloat(adj['22_sell'])||0), pre:'﷼ ' },
+          { k:'21',    lbl:'عيار 21', bid: g21-spread*(21/24) + (parseFloat(adj['21_buy'])||0), ask: g21+spread*(21/24) + (parseFloat(adj['21_sell'])||0), pre:'﷼ ' },
+          { k:'18',    lbl:'عيار 18', bid: g18-spread*(18/24) + (parseFloat(adj['18_buy'])||0), ask: g18+spread*(18/24) + (parseFloat(adj['18_sell'])||0), pre:'﷼ ' }
         ];
 
-        // بناء الصفوف
         let rows = '';
         specs.forEach(s => {
           rows += '<tr>';
-          // شراء
           let clsB = '';
           if (prevPrices[s.k]?.bid != null) {
             clsB = s.bid > prevPrices[s.k].bid ? 'text-green-500' : s.bid < prevPrices[s.k].bid ? 'text-red-500' : '';
           }
           rows += `<td class="border py-2 price-cell ${clsB}">${s.pre}${s.bid.toFixed(2)}</td>`;
-          // بيع
+
           let clsS = '';
           if (prevPrices[s.k]?.ask != null) {
             clsS = s.ask > prevPrices[s.k].ask ? 'text-green-500' : s.ask < prevPrices[s.k].ask ? 'text-red-500' : '';
           }
           rows += `<td class="border py-2 price-cell ${clsS}">${s.pre}${s.ask.toFixed(2)}</td>`;
-          // العيار
+
           rows += `<td class="border py-2 bg-blue-50">${s.lbl}</td>`;
           rows += '</tr>';
 
