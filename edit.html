@@ -24,38 +24,57 @@
       <thead>
         <tr class="bg-blue-100 text-sm">
           <th class="border py-2">العيار</th>
-          <th class="border py-2"> عمود الشراء</th>
-          <th class="border py-2"> عمود البيع</th>
+          <th class="border py-2">عمود الشراء</th>
+          <th class="border py-2">عمود البيع</th>
         </tr>
       </thead>
-     <tbody>
-  <tr>
-    <td class="border py-2 font-semibold">أونصة</td>
-    <td class="border py-2"><input type="number" id="adj_oz_buy" class="border px-2 py-1 w-24 rounded text-center" /></td>
-    <td class="border py-2"><input type="number" id="adj_oz_sell" class="border px-2 py-1 w-24 rounded text-center" /></td>
-  </tr>
-  <tr>
-    <td class="border py-2 font-semibold">عيار 24 قيراط</td>
-    <td class="border py-2"><input type="number" id="adj_24_buy" class="border px-2 py-1 w-24 rounded text-center" /></td>
-    <td class="border py-2"><input type="number" id="adj_24_sell" class="border px-2 py-1 w-24 rounded text-center" /></td>
-  </tr>
-  <tr>
-    <td class="border py-2 font-semibold">عيار 22 قيراط</td>
-    <td class="border py-2"><input type="number" id="adj_22_buy" class="border px-2 py-1 w-24 rounded text-center" /></td>
-    <td class="border py-2"><input type="number" id="adj_22_sell" class="border px-2 py-1 w-24 rounded text-center" /></td>
-  </tr>
-  <tr>
-    <td class="border py-2 font-semibold">عيار 21 قيراط</td>
-    <td class="border py-2"><input type="number" id="adj_21_buy" class="border px-2 py-1 w-24 rounded text-center" /></td>
-    <td class="border py-2"><input type="number" id="adj_21_sell" class="border px-2 py-1 w-24 rounded text-center" /></td>
-  </tr>
-  <tr>
-    <td class="border py-2 font-semibold">عيار 18 قيراط</td>
-    <td class="border py-2"><input type="number" id="adj_18_buy" class="border px-2 py-1 w-24 rounded text-center" /></td>
-    <td class="border py-2"><input type="number" id="adj_18_sell" class="border px-2 py-1 w-24 rounded text-center" /></td>
-  </tr>
-</tbody>
-
+      <tbody>
+        <tr>
+          <td class="border py-2 font-semibold">أونصة</td>
+          <td class="border py-2">
+            <input type="number" id="adj_oz_buy" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+          <td class="border py-2">
+            <input type="number" id="adj_oz_sell" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+        </tr>
+        <tr>
+          <td class="border py-2 font-semibold">عيار 24 قيراط</td>
+          <td class="border py-2">
+            <input type="number" id="adj_24_buy" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+          <td class="border py-2">
+            <input type="number" id="adj_24_sell" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+        </tr>
+        <tr>
+          <td class="border py-2 font-semibold">عيار 22 قيراط</td>
+          <td class="border py-2">
+            <input type="number" id="adj_22_buy" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+          <td class="border py-2">
+            <input type="number" id="adj_22_sell" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+        </tr>
+        <tr>
+          <td class="border py-2 font-semibold">عيار 21 قيراط</td>
+          <td class="border py-2">
+            <input type="number" id="adj_21_buy" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+          <td class="border py-2">
+            <input type="number" id="adj_21_sell" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+        </tr>
+        <tr>
+          <td class="border py-2 font-semibold">عيار 18 قيراط</td>
+          <td class="border py-2">
+            <input type="number" id="adj_18_buy" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+          <td class="border py-2">
+            <input type="number" id="adj_18_sell" class="border px-2 py-1 w-24 rounded text-center" />
+          </td>
+        </tr>
+      </tbody>
     </table>
 
     <div class="text-center mt-6">
@@ -67,12 +86,18 @@
 
 <script>
   const karats = ['oz', '24', '22', '21', '18'];
-  const API_URL = 'https://your-server.com/api/adjustments';
+
+  // إذا كانت صفحتك مستضافة في نفس المشروع مع النقطة النهائية API:
+  const API_URL = '/api/adjustments';
+
+  // --- أو --- إذا كان الـ API يعيش على نطاق كامل آخر مثلاً:
+  // const API_URL = 'https://v0-mhma-gold-site.vercel.app/api/adjustments';
 
   // جلب التعديلات من السيرفر وعرضها في الحقول
   async function loadAdjustments() {
     try {
       const resp = await fetch(API_URL);
+      if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
       const data = await resp.json();
       karats.forEach(k => {
         document.getElementById(`adj_${k}_buy`).value = data[`${k}_buy`] ?? 0;
@@ -80,6 +105,7 @@
       });
     } catch (err) {
       console.error('خطأ بجلب التعديلات من السيرفر:', err);
+      alert('❌ تعذّر جلب التعديلات من الخادم');
     }
   }
 
@@ -94,11 +120,12 @@
     });
 
     try {
-      await fetch(API_URL, {
+      const resp = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
       alert('✅ تم حفظ التعديلات في السيرفر بنجاح');
     } catch (err) {
       console.error('خطأ بحفظ التعديلات على السيرفر:', err);
@@ -106,6 +133,7 @@
     }
   }
 
+  // عند تحميل الصفحة
   loadAdjustments();
 </script>
 
