@@ -1,5 +1,32 @@
 // api/adjustments.js
-import { kv } from '@vercel/kv';
+
+import { createClient } from 'redis';
+
+const redisUrl = process.env.REDIS_URL;
+
+// سطر لطباعة قيمة REDIS_URL للتأكد منها في السجل
+console.log('DEBUG: REDIS_URL =', redisUrl);
+
+if (!redisUrl) {
+  console.error('ERROR: REDIS_URL is not set in environment variables');
+}
+
+let client;
+async function getRedisClient() {
+  if (!client) {
+    try {
+      client = createClient({ url: redisUrl });
+      client.on('error', (err) => console.error('Redis Client Error', err));
+      console.log('DEBUG: Connecting to Redis...'); // رسالة قبل الاتصال
+      await client.connect();
+      console.log('DEBUG: Redis connected successfully'); // رسالة بعد الاتصال
+    } catch (err) {
+      console.error('ERROR: Failed to connect to Redis:', err);
+      throw err;
+    }
+  }
+  return client;
+}
 
 const DEFAULT_ADJUSTMENTS = {
   oz_buy:  0,
@@ -15,19 +42,27 @@ const DEFAULT_ADJUSTMENTS = {
 };
 
 async function ensureDefaults() {
-  const stored = await kv.get('adjustments');
-  if (!stored) {
-    await kv.set('adjustments', DEFAULT_ADJUSTMENTS);
+  const redis = await getRedisClient();
+  const raw = await redis.get('adjustments');
+  if (!raw) {
+    await redis.set('adjustments', JSON.stringify(DEFAULT_ADJUSTMENTS));
     return DEFAULT_ADJUSTMENTS;
   }
-  return stored;
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    return DEFAULT_ADJUSTMENTS;
+  }
 }
 
 export default async function handler(req, res) {
   try {
+    const redis = await getRedisClient();
+
     if (req.method === 'GET') {
       const data = await ensureDefaults();
       return res.status(200).json(data);
+
     } else if (req.method === 'POST') {
       const incoming = await req.json();
       const current = await ensureDefaults();
@@ -47,8 +82,9 @@ export default async function handler(req, res) {
         }
       }
 
-      await kv.set('adjustments', current);
+      await redis.set('adjustments', JSON.stringify(current));
       return res.status(200).json({ status: 'ok', adjustments: current });
+
     } else {
       return res.status(405).json({ error: 'Method Not Allowed' });
     }
