@@ -41,7 +41,7 @@
 
   <!-- الهيدر مع شعار واحد -->
   <header class="bg-blue-50 text-white relative flex items-center justify-center" style="height: 200px;">
-    <img src="logo.png" alt="MHMA Logo"
+    <img src="/logo.png" alt="MHMA Logo"
          class="h-32 sm:h-48 md:h-56 lg:h-64"
          style="max-width: none;" />
   </header>
@@ -124,6 +124,9 @@
       '18':   { bid: null, ask: null }
     };
 
+    // رابط نقطة نهاية التعديلات - الآن نسبي للمسار (/api/adjustments)
+    const ADJUSTMENTS_API_URL = '/api/adjustments';
+
     // تحديث الساعة بتنسيق 12 ساعة بتوقيت الرياض
     function updateClock() {
       const now = new Date();
@@ -136,6 +139,17 @@
       };
       const formatted = new Intl.DateTimeFormat('ar-EG', options).format(now);
       timeDiv.textContent = formatted;
+    }
+
+    // جلب التعديلات من الخادم (KV) باستخدام المسار النسبي
+    async function fetchAdjustments() {
+      try {
+        const resp = await fetch(ADJUSTMENTS_API_URL, { cache: 'no-store' });
+        return resp.ok ? await resp.json() : {};
+      } catch (err) {
+        console.error('خطأ في جلب التعديلات من الخادم:', err);
+        return {};
+      }
     }
 
     // جلب الأسعار وتحديث الجدول وتلوين الدائرة
@@ -180,21 +194,19 @@
         const midGram21k = parseFloat(dataSAR.price_gram_21k  || 0);
         const midGram18k = parseFloat(dataSAR.price_gram_18k  || 0);
 
-        // قراءة التعديلات من localStorage إن وجدت
-        const adjOunceBuy  = parseFloat(localStorage.getItem('adj_oz_buy')  || 0);
-        const adjOunceSell = parseFloat(localStorage.getItem('adj_oz_sell') || 0);
+        // قراءة التعديلات من نقطة النهاية النسبية
+        const adjustments = await fetchAdjustments();
 
-        const adj24Buy  = parseFloat(localStorage.getItem('adj_24_buy')  || 0);
-        const adj24Sell = parseFloat(localStorage.getItem('adj_24_sell') || 0);
-
-        const adj22Buy  = parseFloat(localStorage.getItem('adj_22_buy')  || 0);
-        const adj22Sell = parseFloat(localStorage.getItem('adj_22_sell') || 0);
-
-        const adj21Buy  = parseFloat(localStorage.getItem('adj_21_buy')  || 0);
-        const adj21Sell = parseFloat(localStorage.getItem('adj_21_sell') || 0);
-
-        const adj18Buy  = parseFloat(localStorage.getItem('adj_18_buy')  || 0);
-        const adj18Sell = parseFloat(localStorage.getItem('adj_18_sell') || 0);
+        const adjOunceBuy  = adjustments.oz_buy || 0;
+        const adjOunceSell = adjustments.oz_sell || 0;
+        const adj24Buy  = adjustments['24_buy'] || 0;
+        const adj24Sell = adjustments['24_sell'] || 0;
+        const adj22Buy  = adjustments['22_buy'] || 0;
+        const adj22Sell = adjustments['22_sell'] || 0;
+        const adj21Buy  = adjustments['21_buy'] || 0;
+        const adj21Sell = adjustments['21_sell'] || 0;
+        const adj18Buy  = adjustments['18_buy'] || 0;
+        const adj18Sell = adjustments['18_sell'] || 0;
 
         // حساب الأسعار النهائية للأونصة بالـ USD
         const finalBidOunceUSD = parseFloat((bidOunceUSD + adjOunceBuy).toFixed(2));
@@ -259,8 +271,8 @@
         // صف 24 عيار
         rows += `
           <tr>
-            ${tdCell('24-buy', bidGram24, prevPrices['24'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('24-sell', askGram24, prevPrices['24'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('24-buy', bidGram24, prevPrices['24'].bid, '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('24-sell', askGram24, prevPrices['24'].ask, '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 24</td>
           </tr>
         `;
@@ -268,8 +280,8 @@
         // صف 22 عيار
         rows += `
           <tr>
-            ${tdCell('22-buy', bidGram22, prevPrices['22'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('22-sell', askGram22, prevPrices['22'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('22-buy', bidGram22, prevPrices['22'].bid, '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('22-sell', askGram22, prevPrices['22'].ask, '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 22</td>
           </tr>
         `;
@@ -277,8 +289,8 @@
         // صف 21 عيار
         rows += `
           <tr>
-            ${tdCell('21-buy', bidGram21, prevPrices['21'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('21-sell', askGram21, prevPrices['21'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('21-buy', bidGram21, prevPrices['21'].bid, '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('21-sell', askGram21, prevPrices['21'].ask, '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 21</td>
           </tr>
         `;
@@ -286,8 +298,8 @@
         // صف 18 عيار
         rows += `
           <tr>
-            ${tdCell('18-buy', bidGram18, prevPrices['18'].bid, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
-            ${tdCell('18-sell', askGram18, prevPrices['18'].ask, '<img src="Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('18-buy', bidGram18, prevPrices['18'].bid, '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
+            ${tdCell('18-sell', askGram18, prevPrices['18'].ask, '<img src="/Saudi_Riyal_Symbol.svg.png" class="inline w-4 h-4 ml-1" /> ')}
             <td class="border py-2 bg-blue-50 text-sm sm:text-base">عيار 18</td>
           </tr>
         `;
