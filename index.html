@@ -77,9 +77,14 @@
     const circleEl = document.getElementById('status-circle');
     const timeEl   = document.getElementById('current-time');
     const tblEl    = document.getElementById('gold-prices');
-    const PRICE_API = '/api/gold';
-    const ADJ_API   = '/api/adjustments';
-    const G = 31.1035;
+
+    // GoldAPI endpoints & key
+    const GOLDAPI_KEY    = "goldapi-jzk9smbg824oq-io";
+    const GOLDAPI_URL_USD = "https://www.goldapi.io/api/XAU/USD";
+    const GOLDAPI_URL_SAR = "https://www.goldapi.io/api/XAU/SAR";
+    // Adjustments API
+    const ADJ_API         = '/api/adjustments';
+    const GRAMS_PER_OUNCE = 31.1035;
 
     function updateClock() {
       const now = new Date();
@@ -89,60 +94,80 @@
 
     async function fetchAdjustments() {
       try {
-        const r = await fetch(ADJ_API, { cache:'no-store' });
-        return r.ok ? await r.json() : {};
+        const res = await fetch(ADJ_API, { cache:'no-store' });
+        if (!res.ok) throw new Error('Adjustments API '+res.status);
+        return await res.json();
       } catch (e) {
         console.error('Adj error', e);
-        return {};
+        return {}; 
       }
     }
 
-    // رمز العملة دائماً يسار الرقم
+    // بناء صف الجدول مع رمز العملة على اليسار
     function buildRow(buy, sell, label, isOunce = false) {
       if (isOunce) {
-        // الدولار على اليسار
+        // دولار
         return `
           <tr>
-            <td class="border py-4" dir="ltr">${buy} $</td>
-            <td class="border py-4" dir="ltr">${sell} $</td>
+            <td class="border py-4" dir="ltr">$ ${buy}</td>
+            <td class="border py-4" dir="ltr">$ ${sell}</td>
             <td class="border py-4 bg-blue-50 font-medium">${label}</td>
           </tr>`;
       } else {
-        // الريال على اليسار
+        // ريال
         return `
           <tr>
-            <td class="border py-4" dir="ltr">${buy}<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 ml-1"/></td>
-            <td class="border py-4" dir="ltr">${sell}<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 ml-1"/></td>
+            <td class="border py-4" dir="ltr"><img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 mr-1"/>${buy}</td>
+            <td class="border py-4" dir="ltr"><img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 mr-1"/>${sell}</td>
             <td class="border py-4 bg-blue-50 font-medium">${label}</td>
           </tr>`;
       }
     }
 
-    async function fetchGold() {
+    async function fetchGoldPrice() {
       circleEl.className = 'status-circle bg-yellow-400';
       try {
-        const r = await fetch(PRICE_API, { cache:'no-store' });
-        if (!r.ok) throw new Error('Price API failed');
-        const { usd, sar } = await r.json();
+        // جلب أونصة بالدولار
+        const [usdRes, sarRes] = await Promise.all([
+          fetch(GOLDAPI_URL_USD, {
+            headers: { "x-access-token": GOLDAPI_KEY }
+          }),
+          fetch(GOLDAPI_URL_SAR, {
+            headers: { "x-access-token": GOLDAPI_KEY }
+          })
+        ]);
+        if (!usdRes.ok || !sarRes.ok) throw new Error('GoldAPI failed');
+        const dataUSD = await usdRes.json();
+        const dataSAR = await sarRes.json();
+
+        // قراءات الأسعار
+        const bidO = parseFloat(dataUSD.bid ?? dataUSD.price);
+        const askO = parseFloat(dataUSD.ask ?? dataUSD.price);
+        const mid24 = parseFloat(dataSAR.price_gram_24k);
+        const mid22 = parseFloat(dataSAR.price_gram_22k);
+        const mid21 = parseFloat(dataSAR.price_gram_21k);
+        const mid18 = parseFloat(dataSAR.price_gram_18k);
+        const spreadGram = (parseFloat(dataSAR.ask) - parseFloat(dataSAR.bid)) / GRAMS_PER_OUNCE;
+
+        // جلب التعديلات
         const adj = await fetchAdjustments();
 
-        let html = '';
-        // دمج سعر الأونصة مع التعديل
-        const bO = (parseFloat(usd.bid || usd.price) + (adj.oz_buy || 0)).toFixed(2);
-        const aO = (parseFloat(usd.ask || usd.price) + (adj.oz_sell || 0)).toFixed(2);
-        html += buildRow(bO, aO, 'أونصة', true);
+        // حساب الأسعار النهائية
+        const finalBidO = (bidO + (adj.oz_buy||0)).toFixed(2);
+        const finalAskO = (askO + (adj.oz_sell||0)).toFixed(2);
 
-        [24, 22, 21, 18].forEach(k => {
-          const mid    = parseFloat(sar[`price_gram_${k}k`] || 0);
-          const spread = (parseFloat(sar.ask) - parseFloat(sar.bid)) / G;
-          // سعر الشراء = السعر الأساسي - spread + التعديل
-          const bb     = (mid - spread * (k/24) + (adj[`${k}_buy`] || 0)).toFixed(2);
-          // سعر البيع   = السعر الأساسي + spread + التعديل
-          const aa     = (mid + spread * (k/24) + (adj[`${k}_sell`] || 0)).toFixed(2);
-          html += buildRow(bb, aa, `عيار ${k}`, false);
-        });
+        const gramRows = [24,22,21,18].map(k => {
+          const mid = {24:mid24,22:mid22,21:mid21,18:mid18}[k];
+          const buy = (mid - spreadGram*(k/24) + (adj[`${k}_buy`]||0)).toFixed(2);
+          const sell= (mid + spreadGram*(k/24) + (adj[`${k}_sell`]||0)).toFixed(2);
+          return buildRow(buy, sell, `عيار ${k}`, false);
+        }).join('');
 
-        tblEl.innerHTML = html;
+        // بناء HTML
+        tblEl.innerHTML = 
+          buildRow(finalBidO, finalAskO, 'أونصة', true)
+          + gramRows;
+
         circleEl.className = 'status-circle bg-green-500';
       } catch (err) {
         console.error('Fetch gold error', err);
@@ -151,8 +176,11 @@
       }
     }
 
-    updateClock(); setInterval(updateClock, 1000);
-    fetchGold();    setInterval(fetchGold, 5000);
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    fetchGoldPrice();
+    setInterval(fetchGoldPrice, 5000);
   </script>
 </body>
 </html>
