@@ -13,7 +13,14 @@
     body { font-family:'Cairo',sans-serif; background:#fff }
     table { table-layout:fixed; width:100% }
     .price-cell { transition: color .3s ease }
-    #content-wrapper { background:#fff; border-radius:.5rem; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:2rem; margin-top:-2rem }
+    #content-wrapper { background:#fff; border-radius:.5rem; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:2rem; margin-top:-1.5rem }
+    /* تقليل الرفع على الشاشات الكبيرة لضمان ظهور النص كاملاً */
+    @media (min-width: 640px) {
+      #content-wrapper {
+        padding: 2rem;
+        margin-top: -1.5rem;
+      }
+    }
     .status-circle { width:.75rem; height:.75rem; border-radius:9999px }
     @keyframes blink { 0%,100%{opacity:1;}50%{opacity:0;} }
     .promo-blink { font-size:1.75rem; color:red; animation:blink 1s linear infinite; }
@@ -24,7 +31,6 @@
   <!-- Header -->
   <header class="bg-blue-50 flex flex-col justify-center items-center" style="height:260px;">
     <img src="logo.png" alt="MHMA Logo" class="h-32 sm:h-48 md:h-56 lg:h-64"/>
-    <!-- تم تعديل حجم ولون النص لضمان ظهوره بوضوح -->
     <div class="mt-2 text-3xl font-bold text-gray-900">outlet | اوتليت</div>
   </header>
 
@@ -161,7 +167,7 @@
         circleEl.className = 'status-circle bg-green-500';
       } catch (err) {
         console.error(err);
-        tblEl.innerHTML    = `<tr><td colspan="3" class="py-8 text-red-600">فشل في تحميل الأسعار</td></tr>`;
+        tblEl.innerHTML    = `<tr><td colspan=\"3\" class=\"py-8 text-red-600\">فشل في تحميل الأسعار</td></tr>`;
         circleEl.className = 'status-circle bg-red-500';
       }
     }
