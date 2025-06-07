@@ -2,11 +2,14 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MHMA - أسعار الذهب</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet"/>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- خط القاهرة -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    /* تصميم ثابت، لا تعديلات */
     body { font-family:'Cairo',sans-serif; background:#fff }
     table { table-layout:fixed; width:100% }
     .price-cell { transition: color .3s ease }
@@ -82,7 +85,7 @@
 
     async function fetchAdjustments() {
       try {
-        const r = await fetch(ADJ_API, { cache:'no-store' });
+        const r = await fetch(ADJ_API, { cache: 'no-store' });
         return r.ok ? await r.json() : {};
       } catch {
         return {};
@@ -110,18 +113,18 @@
     async function fetchGoldPrice() {
       circleEl.className = 'status-circle bg-yellow-400';
       try {
-        // 1. جلب بيانات GoldAPI
+        // جلب GoldAPI مع تعطيل الكاش
         const [usdRes, sarRes] = await Promise.all([
-          fetch(GOLDAPI_URL_USD, { headers: { "x-access-token": GOLDAPI_KEY } }),
-          fetch(GOLDAPI_URL_SAR, { headers: { "x-access-token": GOLDAPI_KEY } })
+          fetch(GOLDAPI_URL_USD, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' }),
+          fetch(GOLDAPI_URL_SAR, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' })
         ]);
         const dataUSD = await usdRes.json();
         const dataSAR = await sarRes.json();
 
-        // 2. جلب التعديلات
+        // جلب التعديلات
         const adj = await fetchAdjustments();
 
-        // 3. حساب الأونصة
+        // حساب الأونصة
         const bidO = parseFloat(dataUSD.bid ?? dataUSD.price);
         const askO = parseFloat(dataUSD.ask ?? dataUSD.price);
         let html   = buildRow(
@@ -130,14 +133,13 @@
           'أونصة', true
         );
 
-        // 4. حساب فروقات الجرام وبناء صفوف العيارات
+        // حساب الجرامات لكل عيار
         const sarBidO = parseFloat(dataSAR.bid ?? dataSAR.price);
         const sarAskO = parseFloat(dataSAR.ask ?? dataSAR.price);
         const spreadG = (sarAskO - sarBidO) / GRAMS_PER_OUNCE;
 
         [24, 22, 21, 18].forEach(k => {
-          // هنا نقرأ السعر المتوسط لكل عيار مباشرة
-          const mid = parseFloat(dataSAR[`price_gram_${k}k`] ?? 0);
+          const mid  = parseFloat(dataSAR[`price_gram_${k}k`] ?? 0);
           const buy  = (mid - spreadG * (k/24) + (adj[`${k}_buy`]||0)).toFixed(2);
           const sell = (mid + spreadG * (k/24) + (adj[`${k}_sell`]||0)).toFixed(2);
           html += buildRow(buy, sell, `عيار ${k}`, false);
@@ -152,8 +154,9 @@
       }
     }
 
-    updateClock();               setInterval(updateClock,       1000);
-    fetchGoldPrice();            setInterval(fetchGoldPrice,  5000);
+    // تشغيل الساعة والأسعار
+    updateClock(); setInterval(updateClock, 1000);
+    fetchGoldPrice(); setInterval(fetchGoldPrice, 60000); // تحديث كل دقيقة
   </script>
 </body>
 </html>
