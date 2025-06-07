@@ -2,238 +2,158 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MHMA - أسعار الذهب</title>
-  <!-- Tailwind CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- خط القاهرة -->
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
-    /* ======== Global Styles ======== */
-    body {
-      font-family: 'Cairo', sans-serif;
-      background-color: #ffffff;
-      color: #1f2937;
-    }
-
-    /* ======== Content Wrapper ======== */
-    #content-wrapper {
-      background-color: #ffffff;
-      border-radius: 0.5rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      padding: 1.5rem;
-      margin-top: -1.5rem;
-    }
-    @media (min-width: 640px) {
-      #content-wrapper {
-        padding: 2rem;
-        margin-top: -2rem;
-      }
-    }
-
-    /* ======== Price Table ======== */
-    .price-cell {
-      transition: color 0.3s ease;
-    }
-
-    /* ======== Status Circle ======== */
-    .status-circle {
-      width: 0.75rem;
-      height: 0.75rem;
-      border-radius: 9999px;
-    }
-
-    /* ======== Social Icons ======== */
-    .social-icons img {
-      width: 24px;
-      height: 24px;
-    }
+    body { font-family:'Cairo',sans-serif; background:#fff }
+    table { table-layout:fixed; width:100% }
+    .price-cell { transition: color .3s ease }
+    #content-wrapper { background:#fff; border-radius:.5rem; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:2rem; margin-top:-2rem }
+    .status-circle { width:.75rem; height:.75rem; border-radius:9999px }
+    @keyframes blink { 0%,100%{opacity:1;}50%{opacity:0;} }
+    .promo-blink { font-size:1.75rem; color:red; animation:blink 1s linear infinite; }
   </style>
 </head>
-<body class="bg-white text-gray-900">
+<body class="text-gray-900">
 
-  <!-- ========== Header ========== -->
-  <header class="bg-blue-50 text-white flex items-center justify-center" style="height: 200px;">
-    <img src="logo.png" alt="MHMA Logo" class="h-32 sm:h-48 md:h-56 lg:h-64" style="max-width: none;" />
+  <!-- Header -->
+  <header class="bg-blue-50 flex flex-col justify-center items-center" style="height:260px;">
+    <img src="logo.png" alt="MHMA Logo" class="h-32 sm:h-48 md:h-56 lg:h-64"/>
+    <div class="mt-2 text-2xl font-bold text-gray-800">outlet</div>
   </header>
 
-  <!-- ========== Main Content ========== -->
   <main class="px-4 py-6 flex justify-center">
-    <div id="content-wrapper" class="w-full max-w-xl mx-4">
-      <!-- Title -->
-      <h2 class="text-xl sm:text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">
-        أسعار الذهب (مباشرة)
-      </h2>
-
-      <!-- Status Indicator + Clock -->
+    <div id="content-wrapper" class="w-full max-w-4xl mx-4">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-center">أسعار الذهب (مباشرة)</h2>
       <div id="connection-status" class="flex items-center justify-center gap-2 mb-6">
         <span id="status-circle" class="status-circle bg-yellow-400"></span>
-        <div id="current-time" class="text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm">
-          --:--:--
-        </div>
+        <div id="current-time" class="text-xl font-semibold bg-gray-100 rounded-lg px-4 py-2">--:-- ص/م</div>
       </div>
-
-      <!-- Prices Table -->
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden mx-auto">
-          <thead class="bg-blue-50">
-            <tr>
-              <th class="border py-2 text-sm sm:text-base">الشراء</th>
-              <th class="border py-2 text-sm sm:text-base">البيع</th>
-              <th class="border py-2 text-sm sm:text-base">العيار</th>
-            </tr>
-          </thead>
-          <tbody id="gold-prices" class="text-base sm:text-lg">
-            <tr><td colspan="3" class="py-4">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Notes -->
-      <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">
-        Prices are in Saudi Riyals (SAR)
+      <table class="bg-white border border-gray-200 text-center rounded-md overflow-hidden mx-auto">
+        <thead class="bg-blue-50">
+          <tr>
+            <th class="border py-4 text-lg">الشراء</th>
+            <th class="border py-4 text-lg">البيع</th>
+            <th class="border py-4 text-lg">العيار</th>
+          </tr>
+        </thead>
+        <tbody id="gold-prices" class="text-base sm:text-lg">
+          <tr><td colspan="3" class="py-8">Loading...</td></tr>
+        </tbody>
+      </table>
+      <p class="mt-6 text-center promo-blink">
+        اشتر الآن بسعر الذهب + 40 ريال مصنعية فقط على جميع الأصناف
       </p>
     </div>
   </main>
 
-  <!-- ========== Footer ========== -->
-  <footer class="bg-blue-50 text-center text-xs sm:text-sm p-3 sm:p-4 mt-6">
-    <div class="mx-2 space-y-1">
+  <footer class="bg-blue-50 text-center p-6 text-sm mt-8">
+    <div class="space-y-2">
       <div class="font-semibold">Contact:</div>
       <div>mhma-alarbash@outlook.com</div>
-      <div>Phone: 0530091668 / 0138997999</div>
-      <div>Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3</div>
+      <div>0530091668 / 0138997999</div>
+      <div>Dammam – Al Faisaliah – West Avenue Mall – Gate 3</div>
     </div>
-    <div class="mt-4 flex justify-start space-x-3 social-icons px-4">
-      <a href="https://www.instagram.com/mhma_alarbash" target="_blank" aria-label="Instagram">
-        <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" alt="Instagram" />
-      </a>
-      <a href="https://wa.me/966530091668" target="_blank" aria-label="WhatsApp">
-        <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp" />
-      </a>
-      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank" aria-label="Google Maps">
-        <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Google Maps" />
-      </a>
+    <div class="mt-4 flex justify-center space-x-6">
+      <a href="https://www.instagram.com/mhma_alarbash"><img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" class="w-6 h-6"/></a>
+      <a href="https://wa.me/966530091668"><img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" class="w-6 h-6"/></a>
+      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9"><img src="https://img.icons8.com/ios-filled/50/000000/marker.png" class="w-6 h-6"/></a>
     </div>
   </footer>
 
-  <!-- ========== Scripts ========== -->
   <script>
-    // عناصر DOM
-    const statusCircleEl = document.getElementById('status-circle');
-    const currentTimeEl  = document.getElementById('current-time');
-    const goldPricesEl   = document.getElementById('gold-prices');
+    const circleEl = document.getElementById('status-circle');
+    const timeEl   = document.getElementById('current-time');
+    const tblEl    = document.getElementById('gold-prices');
 
-    // مفاتيح وروابط API
-    const GOLDAPI_KEY    = 'goldapi-jzk9smbg824oq-io';
-    const GOLDAPI_URL_USD = 'https://www.goldapi.io/api/XAU/USD';
-    const GOLDAPI_URL_SAR = 'https://www.goldapi.io/api/XAU/SAR';
+    const GOLDAPI_KEY    = "goldapi-jzk9smbg824oq-io";
+    const GOLDAPI_URL_USD = "https://www.goldapi.io/api/XAU/USD";
+    const GOLDAPI_URL_SAR = "https://www.goldapi.io/api/XAU/SAR";
     const ADJ_API         = '/api/adjustments';
     const GRAMS_PER_OUNCE = 31.1035;
 
-    // تحديث الساعة
     function updateClock() {
       const now = new Date();
-      const opts = {
-        hour: 'numeric', minute: '2-digit', second: '2-digit',
-        hour12: true, timeZone: 'Asia/Riyadh'
-      };
-      currentTimeEl.textContent = new Intl.DateTimeFormat('ar-EG', opts).format(now);
+      const opts = { hour:'numeric', minute:'2-digit', second:'2-digit', hour12:true, timeZone:'Asia/Riyadh' };
+      timeEl.textContent = new Intl.DateTimeFormat('ar-EG', opts).format(now);
     }
 
-    // جلب التعديلات من السيرفر
     async function fetchAdjustments() {
       try {
-        const res = await fetch(ADJ_API, { cache: 'no-store' });
-        if (!res.ok) throw new Error('Adjustments API ' + res.status);
-        return await res.json();
-      } catch (e) {
-        console.error('Error fetching adjustments:', e);
+        const r = await fetch(ADJ_API, { cache:'no-store' });
+        return r.ok ? await r.json() : {};
+      } catch {
         return {};
       }
     }
 
-    // جلب أسعار الذهب من GoldAPI
-    async function fetchGoldData(url) {
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: { 'x-access-token': GOLDAPI_KEY },
-        cache: 'no-store'
-      });
-      if (!res.ok) throw new Error('GoldAPI ' + url + ' error ' + res.status);
-      return await res.json();
-    }
-
-    // بناء صف جدول السعر
     function buildRow(buy, sell, label, isOunce = false) {
       if (isOunce) {
-        // عرض الدولار على اليسار
         return `
-          <tr class="price-cell">
-            <td dir="ltr">$ ${buy}</td>
-            <td dir="ltr">$ ${sell}</td>
-            <td class="bg-blue-50 font-medium">${label}</td>
+          <tr>
+            <td class="border py-4" dir="ltr">$ ${buy}</td>
+            <td class="border py-4" dir="ltr">$ ${sell}</td>
+            <td class="border py-4 bg-blue-50 font-medium">${label}</td>
           </tr>`;
       } else {
-        // عرض الريال على اليسار
         return `
-          <tr class="price-cell">
-            <td dir="ltr">${buy}<img src="Saudi_Riyal_Symbol.png" alt="ر.س" class="inline w-4 h-4 ml-1"/></td>
-            <td dir="ltr">${sell}<img src="Saudi_Riyal_Symbol.png" alt="ر.س" class="inline w-4 h-4 ml-1"/></td>
-            <td class="bg-blue-50 font-medium">${label}</td>
+          <tr>
+            <td class="border py-4" dir="ltr"><img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 mr-1"/>${buy}</td>
+            <td class="border py-4" dir="ltr"><img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 mr-1"/>${sell}</td>
+            <td class="border py-4 bg-blue-50 font-medium">${label}</td>
           </tr>`;
       }
     }
 
-    // تحديث وعرض الأسعار
-    async function updatePrices() {
-      statusCircleEl.className = 'status-circle bg-yellow-400';
+    async function fetchGoldPrice() {
+      circleEl.className = 'status-circle bg-yellow-400';
       try {
-        // جلب البيانات في آن واحد
-        const [usd, sar, adj] = await Promise.all([
-          fetchGoldData(GOLDAPI_URL_USD),
-          fetchGoldData(GOLDAPI_URL_SAR),
-          fetchAdjustments()
+        // 1. جلب بيانات GoldAPI
+        const [usdRes, sarRes] = await Promise.all([
+          fetch(GOLDAPI_URL_USD, { headers: { "x-access-token": GOLDAPI_KEY } }),
+          fetch(GOLDAPI_URL_SAR, { headers: { "x-access-token": GOLDAPI_KEY } })
         ]);
+        const dataUSD = await usdRes.json();
+        const dataSAR = await sarRes.json();
 
-        // حساب الأونصة
-        const bidO = parseFloat(usd.bid ?? usd.price);
-        const askO = parseFloat(usd.ask ?? usd.price);
-        let html  = buildRow(
-          (bidO + (adj.oz_buy || 0)).toFixed(2),
-          (askO + (adj.oz_sell || 0)).toFixed(2),
+        // 2. جلب التعديلات
+        const adj = await fetchAdjustments();
+
+        // 3. حساب الأونصة
+        const bidO = parseFloat(dataUSD.bid ?? dataUSD.price);
+        const askO = parseFloat(dataUSD.ask ?? dataUSD.price);
+        let html   = buildRow(
+          (bidO + (adj.oz_buy||0)).toFixed(2),
+          (askO + (adj.oz_sell||0)).toFixed(2),
           'أونصة', true
         );
 
-        // حساب فروقات الجرام
-        const bidSar = parseFloat(sar.bid ?? sar.price);
-        const askSar = parseFloat(sar.ask ?? sar.price);
-        const spread = (askSar - bidSar) / GRAMS_PER_OUNCE;
+        // 4. حساب فروقات الجرام وبناء صفوف العيارات
+        const sarBidO = parseFloat(dataSAR.bid ?? dataSAR.price);
+        const sarAskO = parseFloat(dataSAR.ask ?? dataSAR.price);
+        const spreadG = (sarAskO - sarBidO) / GRAMS_PER_OUNCE;
 
-        // بناء صف لكل عيار
         [24, 22, 21, 18].forEach(k => {
-          const mid   = parseFloat(sar[`price_gram_${k}k`] || 0);
-          const buy   = (mid - spread * (k/24) + (adj[`${k}_buy`] || 0)).toFixed(2);
-          const sell  = (mid + spread * (k/24) + (adj[`${k}_sell`]|| 0)).toFixed(2);
+          // هنا نقرأ السعر المتوسط لكل عيار مباشرة
+          const mid = parseFloat(dataSAR[`price_gram_${k}k`] ?? 0);
+          const buy  = (mid - spreadG * (k/24) + (adj[`${k}_buy`]||0)).toFixed(2);
+          const sell = (mid + spreadG * (k/24) + (adj[`${k}_sell`]||0)).toFixed(2);
           html += buildRow(buy, sell, `عيار ${k}`, false);
         });
 
-        goldPricesEl.innerHTML = html;
-        statusCircleEl.className = 'status-circle bg-green-500';
-      } catch (e) {
-        console.error('Error updating prices:', e);
-        goldPricesEl.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
-        statusCircleEl.className = 'status-circle bg-red-500';
+        tblEl.innerHTML    = html;
+        circleEl.className = 'status-circle bg-green-500';
+      } catch (err) {
+        console.error(err);
+        tblEl.innerHTML    = `<tr><td colspan="3" class="py-8 text-red-600">فشل في تحميل الأسعار</td></tr>`;
+        circleEl.className = 'status-circle bg-red-500';
       }
     }
 
-    // تهيئة عند تحميل الصفحة
-    window.addEventListener('load', () => {
-      updateClock();
-      setInterval(updateClock, 1000);
-      updatePrices();
-      setInterval(updatePrices, 60000); // تحديث كل دقيقة
-    });
+    updateClock();               setInterval(updateClock,       1000);
+    fetchGoldPrice();            setInterval(fetchGoldPrice,  5000);
   </script>
 </body>
 </html>
