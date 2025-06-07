@@ -99,8 +99,8 @@
 
       try {
         const [u,s] = await Promise.all([
-          fetch(URL_USD, { headers:{'x-access-token':GOLDAPI_KEY} }),
-          fetch(URL_SAR, { headers:{'x-access-token':GOLDAPI_KEY} })
+          fetch(URL_USD, { headers:{'x-access-token':goldapi-jzk9smbg824oq-io} }),
+          fetch(URL_SAR, { headers:{'x-access-token':goldapi-jzk9smbg824oq-io} })
         ]);
         const dUSD = await u.json(), dSAR = await s.json();
 
