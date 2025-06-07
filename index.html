@@ -77,6 +77,9 @@
     const ADJ_API         = '/api/adjustments';
     const GRAMS_PER_OUNCE = 31.1035;
 
+    // حفظ القيم السابقة للمقارنة
+    const prevValues = {};
+
     function updateClock() {
       const now = new Date();
       const opts = { hour:'numeric', minute:'2-digit', second:'2-digit', hour12:true, timeZone:'Asia/Riyadh' };
@@ -92,57 +95,67 @@
       }
     }
 
-    function buildRow(buy, sell, label, isOunce = false) {
-      if (isOunce) {
-        return `
-          <tr>
-            <td class="border py-4" dir="ltr">$ ${buy}</td>
-            <td class="border py-4" dir="ltr">$ ${sell}</td>
-            <td class="border py-4 bg-blue-50 font-medium">${label}</td>
-          </tr>`;
-      } else {
-        return `
-          <tr>
-            <td class="border py-4" dir="ltr"><img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 mr-1"/>${buy}</td>
-            <td class="border py-4" dir="ltr"><img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 mr-1"/>${sell}</td>
-            <td class="border py-4 bg-blue-50 font-medium">${label}</td>
-          </tr>`;
+    function getCellClass(key, current) {
+      const prev = prevValues[key];
+      let cls = '';
+      if (prev !== undefined) {
+        if (current > prev) cls = 'text-green-500';
+        else if (current < prev) cls = 'text-red-500';
       }
+      // إعادة القيمة بعد 0.5 ثانية
+      setTimeout(() => {
+        const el = document.getElementById(key);
+        if (el) el.classList.remove('text-green-500','text-red-500');
+      }, 500);
+      return cls;
     }
 
     async function fetchGoldPrice() {
       circleEl.className = 'status-circle bg-yellow-400';
       try {
-        // جلب GoldAPI مع تعطيل الكاش
-        const [usdRes, sarRes] = await Promise.all([
+        const [usdRes, sarRes, adj] = await Promise.all([
           fetch(GOLDAPI_URL_USD, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' }),
-          fetch(GOLDAPI_URL_SAR, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' })
+          fetch(GOLDAPI_URL_SAR, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' }),
+          fetchAdjustments()
         ]);
         const dataUSD = await usdRes.json();
         const dataSAR = await sarRes.json();
 
-        // جلب التعديلات
-        const adj = await fetchAdjustments();
-
-        // حساب الأونصة
+        let html = '';
+        // الأونصة
         const bidO = parseFloat(dataUSD.bid ?? dataUSD.price);
         const askO = parseFloat(dataUSD.ask ?? dataUSD.price);
-        let html   = buildRow(
-          (bidO + (adj.oz_buy||0)).toFixed(2),
-          (askO + (adj.oz_sell||0)).toFixed(2),
-          'أونصة', true
-        );
+        const bidOClass = getCellClass('ounce-buy', bidO + (adj.oz_buy||0));
+        const askOClass = getCellClass('ounce-sell', askO + (adj.oz_sell||0));
+        html += `
+          <tr>
+            <td id="ounce-buy" class="border py-4 price-cell ${bidOClass}" dir="ltr">$ ${(bidO + (adj.oz_buy||0)).toFixed(2)}</td>
+            <td id="ounce-sell" class="border py-4 price-cell ${askOClass}" dir="ltr">$ ${(askO + (adj.oz_sell||0)).toFixed(2)}</td>
+            <td class="border py-4 bg-blue-50 font-medium">أونصة</td>
+          </tr>`;
+        prevValues['ounce-buy']  = bidO + (adj.oz_buy||0);
+        prevValues['ounce-sell'] = askO + (adj.oz_sell||0);
 
-        // حساب الجرامات لكل عيار
+        // الجرامات
         const sarBidO = parseFloat(dataSAR.bid ?? dataSAR.price);
         const sarAskO = parseFloat(dataSAR.ask ?? dataSAR.price);
         const spreadG = (sarAskO - sarBidO) / GRAMS_PER_OUNCE;
-
-        [24, 22, 21, 18].forEach(k => {
-          const mid  = parseFloat(dataSAR[`price_gram_${k}k`] ?? 0);
-          const buy  = (mid - spreadG * (k/24) + (adj[`${k}_buy`]||0)).toFixed(2);
-          const sell = (mid + spreadG * (k/24) + (adj[`${k}_sell`]||0)).toFixed(2);
-          html += buildRow(buy, sell, `عيار ${k}`, false);
+        [24,22,21,18].forEach(k => {
+          const mid   = parseFloat(dataSAR[`price_gram_${k}k`] ?? 0);
+          const buy   = parseFloat((mid - spreadG*(k/24) + (adj[`${k}_buy`]||0)).toFixed(2));
+          const sell  = parseFloat((mid + spreadG*(k/24) + (adj[`${k}_sell`]||0)).toFixed(2));
+          const buyId = `${k}-buy`;
+          const sellId= `${k}-sell`;
+          const buyCls = getCellClass(buyId, buy);
+          const sellCls= getCellClass(sellId, sell);
+          html += `
+            <tr>
+              <td id="${buyId}" class="border py-4 price-cell ${buyCls}" dir="ltr"><img src="Saudi_Riyal_Symbol.png" class="inline w-5 h-5 mr-1"/>${buy.toFixed(2)}</td>
+              <td id="${sellId}" class="border py-4 price-cell ${sellCls}" dir="ltr"><img src="Saudi_Riyal_Symbol.png" class="inline w-5 h-5 mr-1"/>${sell.toFixed(2)}</td>
+              <td class="border py-4 bg-blue-50 font-medium">عيار ${k}</td>
+            </tr>`;
+          prevValues[buyId]  = buy;
+          prevValues[sellId] = sell;
         });
 
         tblEl.innerHTML    = html;
@@ -154,9 +167,8 @@
       }
     }
 
-    // تشغيل الساعة والأسعار
     updateClock(); setInterval(updateClock, 1000);
-    fetchGoldPrice(); setInterval(fetchGoldPrice, 60000); // تحديث كل دقيقة
+    fetchGoldPrice(); setInterval(fetchGoldPrice, 60000);
   </script>
 </body>
 </html>
