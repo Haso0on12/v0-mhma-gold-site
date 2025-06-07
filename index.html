@@ -13,10 +13,9 @@
     table { table-layout: fixed; width: 100%; border-collapse: collapse; }
     th, td { border: 1px solid #E5E7EB; }
     .status-circle { width: .75rem; height: .75rem; border-radius: 9999px; }
-    /* symbol left of number */
-    .riyalsym { width: 1rem; height: 1rem; vertical-align: middle; margin-right: .25rem; margin-left: 0; }
+    .symbol { width: 1rem; height: 1rem; vertical-align: middle; margin-left: .25rem; }
 
-    /* Blink animation for promo */
+    /* Blink animation */
     @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.2; } }
     .promo-blink {
       color: #e53935;
@@ -35,7 +34,6 @@
   <!-- Header -->
   <header class="bg-blue-50 flex flex-col items-center justify-center" style="height:260px;">
     <img src="/logo.png" alt="MHMA Logo" class="h-32 sm:h-48 md:h-56 lg:h-64" />
-    <!-- outlet under logo -->
     <div class="mt-2 text-2xl font-bold text-gray-800">outlet</div>
   </header>
 
@@ -68,12 +66,13 @@
     </div>
   </main>
 
+  <!-- Footer -->
   <footer class="bg-blue-50 text-center p-6 text-sm mt-8">
     <div class="mx-2 space-y-2">
       <div class="font-semibold">Contact:</div>
       <div>mhma-alarbash@outlook.com</div>
       <div>0530091668 / 0138997999</div>
-      <div>Dammam – Al Faisaliah – West Avenue Mall – Gate 3</div>
+      <div>Dammam – Al Faisaliah – West Avenue Mall – Gate 3</div>
     </div>
     <div class="mt-4 flex justify-center space-x-6">
       <a href="https://www.instagram.com/mhma_alarbash" aria-label="Instagram">
@@ -92,8 +91,9 @@
     const circle = document.getElementById('status-circle');
     const timeDiv = document.getElementById('current-time');
     const pricesTable = document.getElementById('gold-prices');
-    const ENDPOINT_PRICE = '/api/gold';
-    const ENDPOINT_ADJ   = '/api/adjustments';
+    const PRICE_API = '/api/gold';
+    const ADJ_API   = '/api/adjustments';
+    const G = 31.1035;
 
     function updateClock() {
       const opts = { hour:'numeric', minute:'2-digit', second:'2-digit', hour12:true, timeZone:'Asia/Riyadh' };
@@ -102,7 +102,7 @@
 
     async function fetchAdjustments() {
       try {
-        const r = await fetch(ENDPOINT_ADJ, { cache:'no-store' });
+        const r = await fetch(ADJ_API, { cache:'no-store' });
         return r.ok ? await r.json() : {};
       } catch (e) {
         console.error('Adj error', e);
@@ -114,20 +114,16 @@
       if (isOunce) {
         return `
           <tr>
-            <td class="py-4 bg-blue-50 font-medium">${label}</td>
-            <td class="price-cell py-4">$ ${buy}</td>
-            <td class="price-cell py-4">$ ${sell}</td>
+            <td class="py-4 bg-blue-50 font-medium text-right">${label}</td>
+            <td class="price-cell py-4">${buy} $</td>
+            <td class="price-cell py-4">${sell} $</td>
           </tr>`;
       } else {
         return `
           <tr>
-            <td class="py-4 bg-blue-50 font-medium">${label}</td>
-            <td class="price-cell py-4">
-              <img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="riyalsym"/>${buy}
-            </td>
-            <td class="price-cell py-4">
-              <img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="riyalsym"/>${sell}
-            </td>
+            <td class="py-4 bg-blue-50 font-medium text-right">${label}</td>
+            <td class="price-cell py-4">${buy} <img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="symbol"/></td>
+            <td class="price-cell py-4">${sell} <img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="symbol"/></td>
           </tr>`;
       }
     }
@@ -136,11 +132,10 @@
       circle.className = 'status-circle bg-yellow-400';
       try {
         const [price, adj] = await Promise.all([
-          fetch(ENDPOINT_PRICE, { cache:'no-store' }).then(r => { if (!r.ok) throw ''; return r.json(); }),
+          fetch(PRICE_API, { cache:'no-store' }).then(r => { if (!r.ok) throw ''; return r.json(); }),
           fetchAdjustments()
         ]);
         const { usd, sar } = price;
-        const G = 31.1035;
         let html = '';
         // Ounce
         const bO = (parseFloat(usd.bid||usd.price) + (adj.oz_buy||0)).toFixed(2);
@@ -149,7 +144,7 @@
         // Grams
         [24,22,21,18].forEach(k => {
           const mid    = parseFloat(sar[`price_gram_${k}k`]||0);
-          const spread = (parseFloat(sar.ask)-parseFloat(sar.bid))/G;
+          const spread = (parseFloat(sar.ask)- parseFloat(sar.bid))/G;
           const bb     = (mid - spread*(k/24) + (adj[`${k}_buy`]||0)).toFixed(2);
           const aa     = (mid + spread*(k/24) + (adj[`${k}_sell`]||0)).toFixed(2);
           html += buildRow(bb, aa, `عيار ${k}`, false);
