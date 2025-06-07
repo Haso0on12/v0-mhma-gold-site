@@ -13,7 +13,7 @@
     table { table-layout: fixed; width: 100%; border-collapse: collapse; }
     th, td { border: 1px solid #E5E7EB; }
     .status-circle { width: .75rem; height: .75rem; border-radius: 9999px; }
-    .symbol { width: 1rem; height: 1rem; vertical-align: middle; margin-left: .25rem; }
+    .symbol { width: 1rem; height: 1rem; vertical-align: middle; margin-right: .25rem; }
 
     /* Blink animation */
     @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.2; } }
@@ -115,15 +115,15 @@
         return `
           <tr>
             <td class="py-4 bg-blue-50 font-medium text-right">${label}</td>
-            <td class="price-cell py-4">${buy} $</td>
-            <td class="price-cell py-4">${sell} $</td>
+            <td class="price-cell py-4">$ ${buy}</td>
+            <td class="price-cell py-4">$ ${sell}</td>
           </tr>`;
       } else {
         return `
           <tr>
             <td class="py-4 bg-blue-50 font-medium text-right">${label}</td>
-            <td class="price-cell py-4">${buy} <img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="symbol"/></td>
-            <td class="price-cell py-4">${sell} <img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="symbol"/></td>
+            <td class="price-cell py-4"><img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="symbol"/>${buy}</td>
+            <td class="price-cell py-4"><img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="symbol"/>${sell}</td>
           </tr>`;
       }
     }
@@ -144,7 +144,7 @@
         // Grams
         [24,22,21,18].forEach(k => {
           const mid    = parseFloat(sar[`price_gram_${k}k`]||0);
-          const spread = (parseFloat(sar.ask)- parseFloat(sar.bid))/G;
+          const spread = (parseFloat(sar.ask)-parseFloat(sar.bid))/G;
           const bb     = (mid - spread*(k/24) + (adj[`${k}_buy`]||0)).toFixed(2);
           const aa     = (mid + spread*(k/24) + (adj[`${k}_sell`]||0)).toFixed(2);
           html += buildRow(bb, aa, `عيار ${k}`, false);
