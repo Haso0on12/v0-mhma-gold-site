@@ -99,24 +99,25 @@
 
     // عكس مكان الرمز
     function buildRow(buy, sell, label, isOunce = false) {
-      if (isOunce) {
-        // دولار يسار الرقم
-        return `
-          <tr>
-            <td class="border py-4">${buy} $</td>
-            <td class="border py-4">${sell} $</td>
-            <td class="border py-4 bg-blue-50 font-medium">${label}</td>
-          </tr>`;
-      } else {
-        // رمز الريال يسار الرقم
-        return `
-          <tr>
-            <td class="border py-4">${buy}<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 ml-1"/></td>
-            <td class="border py-4">${sell}<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 ml-1"/></td>
-            <td class="border py-4 bg-blue-50 font-medium">${label}</td>
-          </tr>`;
-      }
-    }
+  if (isOunce) {
+    // الدولار على اليسار
+    return `
+      <tr>
+        <td class="border py-4" dir="ltr">${buy} $</td>
+        <td class="border py-4" dir="ltr">${sell} $</td>
+        <td class="border py-4 bg-blue-50 font-medium">${label}</td>
+      </tr>`;
+  } else {
+    // رمز الريال على اليسار
+    return `
+      <tr>
+        <td class="border py-4" dir="ltr">${buy}<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 ml-1"/></td>
+        <td class="border py-4" dir="ltr">${sell}<img src="Saudi_Riyal_Symbol.png" alt="ريال" class="inline w-5 h-5 ml-1"/></td>
+        <td class="border py-4 bg-blue-50 font-medium">${label}</td>
+      </tr>`;
+  }
+}
+
 
     async function fetchGold() {
       circleEl.className = 'status-circle bg-yellow-400';
