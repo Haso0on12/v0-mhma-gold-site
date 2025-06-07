@@ -75,11 +75,13 @@
   </footer>
 
   <script>
-    const circle = document.getElementById('status-circle');
+    const circle  = document.getElementById('status-circle');
     const timeDiv = document.getElementById('current-time');
     const pricesTable = document.getElementById('gold-prices');
-    const API_PRICE = '/api/gold';
-    const API_ADJ   = '/api/adjustments';
+    // استخدم عنوان v0 deploy لتجنب GH Pages
+    const V0_API = 'https://v0-mhma-gold-site.vercel.app';
+    const API_PRICE = `${V0_API}/api/gold`;
+    const API_ADJ   = `${V0_API}/api/adjustments`;
 
     function updateClock() {
       const now = new Date();
@@ -118,11 +120,9 @@
         const perGram = spread / G;
 
         function row(b, a, lbl) {
-          return `<tr>` +
-                 `<td class="border py-4">${b}&nbsp;<img src="Saudi_Riyal_Symbol.svg.png" alt="ريال" class="inline w-5 h-5"> </td>` +
-                 `<td class="border py-4">${a}&nbsp;<img src="Saudi_Riyal_Symbol.svg.png" alt="ريال" class="inline w-5 h-5"> </td>` +
-                 `<td class="border py-4 bg-blue-50 font-medium">${lbl}</td>` +
-                 `</tr>`;
+          return `<tr><td class="border py-4">${b}&nbsp;<img src="Saudi_Riyal_Symbol.svg.png" alt="ريال" class="inline w-5 h-5"></td>` +
+                 `<td class="border py-4">${a}&nbsp;<img src="Saudi_Riyal_Symbol.svg.png" alt="ريال" class="inline w-5 h-5"></td>` +
+                 `<td class="border py-4 bg-blue-50 font-medium">${lbl}</td></tr>`;
         }
 
         let html = row(finalBidO, finalAskO, 'أونصة');
