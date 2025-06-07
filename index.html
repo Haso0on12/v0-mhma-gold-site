@@ -13,7 +13,7 @@
     table { table-layout: fixed; width: 100%; border-collapse: collapse; }
     th, td { border: 1px solid #E5E7EB; }
     .status-circle { width: .75rem; height: .75rem; border-radius: 9999px; }
-    .symbol { width: 1rem; height: 1rem; vertical-align: middle; margin-right: .25rem; }
+    .symbol { width: 1rem; height: 1rem; vertical-align: middle; margin-left: .25rem; }
 
     /* Blink animation */
     @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.2; } }
@@ -111,21 +111,26 @@
     }
 
     function buildRow(buy, sell, label, isOunce = false) {
+      // label on the right column
+      const labelCell = `<td class="py-4 bg-blue-50 font-medium text-right">${label}</td>`;
+      // currency cells with symbol on left
+      const buyCell = `<td class="price-cell py-4"><span class=\"symbol\">ريال</span>${buy}</td>`;
+      const sellCell = `<td class="price-cell py-4"><span class=\"symbol\">ريال</span>${sell}</td>`;
       if (isOunce) {
+        // for ounce, use $ symbol left
         return `
           <tr>
-            <td class="py-4 bg-blue-50 font-medium text-right">${label}</td>
+            ${labelCell}
             <td class="price-cell py-4">$ ${buy}</td>
             <td class="price-cell py-4">$ ${sell}</td>
           </tr>`;
-      } else {
-        return `
-          <tr>
-            <td class="py-4 bg-blue-50 font-medium text-right">${label}</td>
-            <td class="price-cell py-4"><img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="symbol"/>${buy}</td>
-            <td class="price-cell py-4"><img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="symbol"/>${sell}</td>
-          </tr>`;
       }
+      return `
+        <tr>
+          ${labelCell}
+          ${buyCell}
+          ${sellCell}
+        </tr>`;
     }
 
     async function fetchGold() {
