@@ -160,13 +160,13 @@
 
       try {
         // جلب سعر الأونصة بالدولار
-        const respUSD = await fetch(GOLDAPI_URL_USD, {
-          method: "GET",
-          headers: {
-            "x-access-token": "goldapi-jzk9smbg824oq-io",
-            "Content-Type": "application/json"
-          }
-        });
+      const respUSD = await fetch(GOLDAPI_URL_USD, {
+  method: "GET",
+  headers: {
+    "x-access-token": "goldapi-jzk9smbg824oq-io",  // <== علامات اقتباس ضرورية
+    "Content-Type": "application/json"
+  }
+});
         const dataUSD = await respUSD.json();
 
         let bidOunceUSD = dataUSD.bid !== undefined ? parseFloat(dataUSD.bid) : null;
