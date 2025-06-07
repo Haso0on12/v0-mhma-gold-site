@@ -67,9 +67,11 @@
 
 <script>
   const karats = ['oz', '24', '22', '21', '18'];
-  const API_URL = 'https://your-server.com/api/adjustments';
+  // استخدم المسار النسبي لو على نفس الدومين:
+  const API_URL = '/api/adjustments';
+  // أو لو الصفحة خارج الدومين، ضع هنا رابط Vercel الكامل:
+  // const API_URL = 'https://v0-mhma-gold-site.vercel.app/api/adjustments';
 
-  // جلب التعديلات من السيرفر وعرضها في الحقول
   async function loadAdjustments() {
     try {
       const resp = await fetch(API_URL);
@@ -83,22 +85,22 @@
     }
   }
 
-  // إرسال التعديلات للسيرفر عند الضغط على زر الحفظ
   async function saveAdjustments() {
     const payload = {};
     karats.forEach(k => {
-      const buy = parseFloat(document.getElementById(`adj_${k}_buy`).value) || 0;
+      const buy  = parseFloat(document.getElementById(`adj_${k}_buy`).value)  || 0;
       const sell = parseFloat(document.getElementById(`adj_${k}_sell`).value) || 0;
-      payload[`${k}_buy`] = buy;
+      payload[`${k}_buy`]  = buy;
       payload[`${k}_sell`] = sell;
     });
 
     try {
-      await fetch(API_URL, {
+      const resp = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      if (!resp.ok) throw new Error(`Status ${resp.status}`);
       alert('✅ تم حفظ التعديلات في السيرفر بنجاح');
     } catch (err) {
       console.error('خطأ بحفظ التعديلات على السيرفر:', err);
@@ -108,6 +110,7 @@
 
   loadAdjustments();
 </script>
+
 
 </body>
 </html>
