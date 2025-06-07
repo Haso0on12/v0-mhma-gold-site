@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MHMA - أسعار الذهب</title>
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <!-- Cairo Font -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
     body { font-family:'Cairo',sans-serif; background:#fff }
@@ -12,6 +14,17 @@
     .price-cell { transition: color .3s ease }
     #content-wrapper { background:#fff; border-radius:.5rem; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:2rem; margin-top:-2rem }
     .status-circle { width:.75rem; height:.75rem; border-radius:9999px }
+
+    /* ======== Blink animation for promo text ======== */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0; }
+    }
+    .promo-blink {
+      font-size: 1.75rem;       /* يكبّر النص */
+      color: red;               /* لون أحمر */
+      animation: blink 1s linear infinite;
+    }
   </style>
 </head>
 <body class="text-gray-900">
@@ -45,7 +58,8 @@
         </tbody>
       </table>
 
-      <p class="mt-6 text-lg text-gray-700 text-center">
+      <!-- Promotional text with blink effect -->
+      <p class="mt-6 text-center promo-blink">
         اشتر الآن بسعر الذهب + 40 ريال مصنعية فقط على جميع الأصناف
       </p>
     </div>
@@ -79,10 +93,19 @@
       timeEl.textContent = new Intl.DateTimeFormat('ar-EG', opts).format(now);
     }
 
-    // دالة تبني الصف مع اختيار نوع العملة
+    async function fetchAdjustments() {
+      try {
+        const r = await fetch(ADJ_API, { cache:'no-store' });
+        return r.ok ? await r.json() : {};
+      } catch (e) {
+        console.error('Adj error', e);
+        return {};
+      }
+    }
+
     function buildRow(buy, sell, label, isOunce = false) {
       if (isOunce) {
-        // فقط الدولار للأونصة
+        // Donate with dollar only
         return `
           <tr>
             <td class="border py-4">$ ${buy}</td>
@@ -90,7 +113,7 @@
             <td class="border py-4 bg-blue-50 font-medium">${label}</td>
           </tr>`;
       } else {
-        // رمز الريال للجرامات
+        // Riyal symbol for grams
         return `
           <tr>
             <td class="border py-4">
@@ -104,16 +127,6 @@
       }
     }
 
-    async function fetchAdjustments() {
-      try {
-        const r = await fetch(ADJ_API, { cache:'no-store' });
-        return r.ok ? await r.json() : {};
-      } catch(e) {
-        console.error('Adj error', e);
-        return {};
-      }
-    }
-
     async function fetchGold() {
       circleEl.className = 'status-circle bg-yellow-400';
       try {
@@ -123,23 +136,23 @@
         const adj = await fetchAdjustments();
 
         let html = '';
-        // الأونصة بدولار فقط
-        const bO = (parseFloat(usd.bid||usd.price) + (adj.oz_buy||0)).toFixed(2);
-        const aO = (parseFloat(usd.ask||usd.price) + (adj.oz_sell||0)).toFixed(2);
+        // Ounce in $
+        const bO = (parseFloat(usd.bid || usd.price) + (adj.oz_buy || 0)).toFixed(2);
+        const aO = (parseFloat(usd.ask || usd.price) + (adj.oz_sell || 0)).toFixed(2);
         html += buildRow(bO, aO, 'أونصة', true);
 
-        // الجرامات بالريال
-        [24,22,21,18].forEach(k => {
+        // Grams in Riyal
+        [24, 22, 21, 18].forEach(k => {
           const mid    = parseFloat(sar[`price_gram_${k}k`] || 0);
           const spread = (parseFloat(sar.ask) - parseFloat(sar.bid)) / G;
-          const bb     = (mid - spread * (k/24) + (adj[`${k}_buy`]||0)).toFixed(2);
-          const aa     = (mid + spread * (k/24) + (adj[`${k}_sell`]||0)).toFixed(2);
+          const bb     = (mid - spread * (k/24) + (adj[`${k}_buy`] || 0)).toFixed(2);
+          const aa     = (mid + spread * (k/24) + (adj[`${k}_sell`] || 0)).toFixed(2);
           html += buildRow(bb, aa, `عيار ${k}`, false);
         });
 
         tblEl.innerHTML = html;
         circleEl.className = 'status-circle bg-green-500';
-      } catch(err) {
+      } catch (err) {
         console.error('Fetch gold error', err);
         tblEl.innerHTML = `<tr><td colspan="3" class="py-8 text-red-600">فشل في تحميل الأسعار</td></tr>`;
         circleEl.className = 'status-circle bg-red-500';
