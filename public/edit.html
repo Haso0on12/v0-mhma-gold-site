@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تعديل الأسعار</title>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- خط القاهرة -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #f0f4f8;
+    }
+    input {
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 0.25rem;
+      padding: 0.5rem;
+      width: 80px;
+    }
+    #content-wrapper {
+      background-color: #ffffff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 2rem;
+      max-width: 600px;
+      margin: 2rem auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="content-wrapper">
+    <h2 class="text-2xl font-bold text-center mb-6">تعديل الأسعار</h2>
+    <table class="w-full border text-center">
+      <thead>
+        <tr class="bg-blue-100 text-sm">
+          <th class="border py-2">العيار</th>
+          <th class="border py-2">عمود الشراء</th>
+          <th class="border py-2">عمود البيع</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="border py-2 font-semibold">أونصة</td>
+          <td class="border py-2"><input type="number" id="adj_oz_buy" /></td>
+          <td class="border py-2"><input type="number" id="adj_oz_sell" /></td>
+        </tr>
+        <tr>
+          <td class="border py-2 font-semibold">عيار 24 قيراط</td>
+          <td class="border py-2"><input type="number" id="adj_24_buy" /></td>
+          <td class="border py-2"><input type="number" id="adj_24_sell" /></td>
+        </tr>
+        <tr>
+          <td class="border py-2 font-semibold">عيار 22 قيراط</td>
+          <td class="border py-2"><input type="number" id="adj_22_buy" /></td>
+          <td class="border py-2"><input type="number" id="adj_22_sell" /></td>
+        </tr>
+        <tr>
+          <td class="border py-2 font-semibold">عيار 21 قيراط</td>
+          <td class="border py-2"><input type="number" id="adj_21_buy" /></td>
+          <td class="border py-2"><input type="number" id="adj_21_sell" /></td>
+        </tr>
+        <tr>
+          <td class="border py-2 font-semibold">عيار 18 قيراط</td>
+          <td class="border py-2"><input type="number" id="adj_18_buy" /></td>
+          <td class="border py-2"><input type="number" id="adj_18_sell" /></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="text-center mt-6">
+      <button onclick="saveAdjustments()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+        💾 حفظ التعديلات
+      </button>
+    </div>
+  </div>
+
+  <script>
+  const API_URL = '/api/adjustments';
+
+
+    // دالة لتحميل التعديلات من KV وملء الحقول
+    async function loadAdjustments() {
+      try {
+        const resp = await fetch(API_URL);
+        if (!resp.ok) throw new Error(`Status ${resp.status}`);
+        const data = await resp.json();
+        ['oz','24','22','21','18'].forEach(k => {
+          document.getElementById(`adj_${k}_buy`).value = data[`${k}_buy`] ?? 0;
+          document.getElementById(`adj_${k}_sell`).value = data[`${k}_sell`] ?? 0;
+        });
+      } catch (err) {
+        console.error('خطأ بجلب التعديلات من الخادم:', err);
+      }
+    }
+
+    // دالة لحفظ التعديلات في KV عبر POST
+    async function saveAdjustments() {
+      const payload = {};
+      ['oz','24','22','21','18'].forEach(k => {
+        const buy = parseFloat(document.getElementById(`adj_${k}_buy`).value) || 0;
+        const sell = parseFloat(document.getElementById(`adj_${k}_sell`).value) || 0;
+        payload[`${k}_buy`] = buy;
+        payload[`${k}_sell`] = sell;
+      });
+
+      try {
+        const resp = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!resp.ok) throw new Error(`Status ${resp.status}`);
+        alert('✅ تم حفظ التعديلات بنجاح');
+      } catch (err) {
+        console.error('خطأ بحفظ التعديلات على الخادم:', err);
+        alert('❌ حدث خطأ أثناء حفظ التعديلات');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadAdjustments);
+  </script>
+</body>
+</html>
