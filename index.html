@@ -2,174 +2,238 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MHMA - أسعار الذهب</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet"/>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- خط القاهرة -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Cairo', sans-serif; background: #f9fafb; color: #1f2937; }
-    table { table-layout: fixed; width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #e5e7eb; padding: 0.75rem; }
-    th { background: #eff6ff; }
-    .status-circle { width: .75rem; height: .75rem; border-radius: 9999px; }
-    .promo-blink { font-size: 1.5rem; color: #dc2626; animation: blink 1s linear infinite; }
-    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    /* ======== Global Styles ======== */
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #ffffff;
+      color: #1f2937;
+    }
+
+    /* ======== Content Wrapper ======== */
+    #content-wrapper {
+      background-color: #ffffff;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-top: -1.5rem;
+    }
+    @media (min-width: 640px) {
+      #content-wrapper {
+        padding: 2rem;
+        margin-top: -2rem;
+      }
+    }
+
+    /* ======== Price Table ======== */
+    .price-cell {
+      transition: color 0.3s ease;
+    }
+
+    /* ======== Status Circle ======== */
+    .status-circle {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 9999px;
+    }
+
+    /* ======== Social Icons ======== */
+    .social-icons img {
+      width: 24px;
+      height: 24px;
+    }
   </style>
 </head>
-<body class="text-gray-900">
+<body class="bg-white text-gray-900">
 
-  <header class="bg-blue-50 text-center py-10">
-    <img src="logo.png" alt="MHMA Logo" class="mx-auto h-40"/>
-    <h1 class="mt-4 text-3xl font-bold">MHMA Gold Outlet</h1>
+  <!-- ========== Header ========== -->
+  <header class="bg-blue-50 text-white flex items-center justify-center" style="height: 200px;">
+    <img src="logo.png" alt="MHMA Logo" class="h-32 sm:h-48 md:h-56 lg:h-64" style="max-width: none;" />
   </header>
 
-  <main class="px-4 py-8">
-    <div class="max-w-3xl mx-auto">
-      <div class="flex items-center justify-center mb-6 space-x-3">
+  <!-- ========== Main Content ========== -->
+  <main class="px-4 py-6 flex justify-center">
+    <div id="content-wrapper" class="w-full max-w-xl mx-4">
+      <!-- Title -->
+      <h2 class="text-xl sm:text-2xl font-semibold mt-4 mb-6 text-center text-gray-800">
+        أسعار الذهب (مباشرة)
+      </h2>
+
+      <!-- Status Indicator + Clock -->
+      <div id="connection-status" class="flex items-center justify-center gap-2 mb-6">
         <span id="status-circle" class="status-circle bg-yellow-400"></span>
-        <div id="current-time" class="bg-gray-100 px-4 py-2 rounded shadow-sm font-semibold">
+        <div id="current-time" class="text-lg font-semibold text-gray-800 bg-gray-100 rounded-lg px-3 py-1 shadow-sm">
           --:--:--
         </div>
       </div>
 
-      <table class="w-full bg-white rounded shadow-sm mb-6">
-        <thead>
-          <tr>
-            <th>العيار</th>
-            <th>شراء</th>
-            <th>بيع</th>
-          </tr>
-        </thead>
-        <tbody id="gold-prices">
-          <tr><td colspan="3" class="text-center py-4">جاري التحميل...</td></tr>
-        </tbody>
-      </table>
+      <!-- Prices Table -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200 text-center rounded-md overflow-hidden mx-auto">
+          <thead class="bg-blue-50">
+            <tr>
+              <th class="border py-2 text-sm sm:text-base">الشراء</th>
+              <th class="border py-2 text-sm sm:text-base">البيع</th>
+              <th class="border py-2 text-sm sm:text-base">العيار</th>
+            </tr>
+          </thead>
+          <tbody id="gold-prices" class="text-base sm:text-lg">
+            <tr><td colspan="3" class="py-4">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-      <p class="text-center promo-blink">
-        اشتر الآن بسعر الذهب + 40 ريال مصنعية فقط على جميع الأصناف
+      <!-- Notes -->
+      <p class="text-xs sm:text-sm mt-4 text-gray-600 text-center">
+        Prices are in Saudi Riyals (SAR)
       </p>
     </div>
   </main>
 
-  <footer class="bg-blue-50 text-center py-6 text-sm">
-    <div class="space-y-1">
+  <!-- ========== Footer ========== -->
+  <footer class="bg-blue-50 text-center text-xs sm:text-sm p-3 sm:p-4 mt-6">
+    <div class="mx-2 space-y-1">
+      <div class="font-semibold">Contact:</div>
       <div>mhma-alarbash@outlook.com</div>
-      <div>0530091668 / 0138997999</div>
-      <div>Dammam – Al Faisaliah – West Avenue Mall – Gate 3</div>
+      <div>Phone: 0530091668 / 0138997999</div>
+      <div>Location: Dammam – Al Faisaliah – West Avenue Mall – Gate 3</div>
+    </div>
+    <div class="mt-4 flex justify-start space-x-3 social-icons px-4">
+      <a href="https://www.instagram.com/mhma_alarbash" target="_blank" aria-label="Instagram">
+        <img src="https://img.icons8.com/ios-filled/50/000000/instagram-new.png" alt="Instagram" />
+      </a>
+      <a href="https://wa.me/966530091668" target="_blank" aria-label="WhatsApp">
+        <img src="https://img.icons8.com/ios-filled/50/25D366/whatsapp.png" alt="WhatsApp" />
+      </a>
+      <a href="https://maps.app.goo.gl/YMfbCsnXr5oHfUMQ9" target="_blank" aria-label="Google Maps">
+        <img src="https://img.icons8.com/ios-filled/50/000000/marker.png" alt="Google Maps" />
+      </a>
     </div>
   </footer>
 
+  <!-- ========== Scripts ========== -->
   <script>
-    const statusEl = document.getElementById('status-circle');
-    const timeEl   = document.getElementById('current-time');
-    const pricesEl = document.getElementById('gold-prices');
+    // عناصر DOM
+    const statusCircleEl = document.getElementById('status-circle');
+    const currentTimeEl  = document.getElementById('current-time');
+    const goldPricesEl   = document.getElementById('gold-prices');
 
-    const GOLDAPI_KEY = 'goldapi-jzk9smbg824oq-io';
-    const URL_USD     = 'https://www.goldapi.io/api/XAU/USD';
-    const URL_SAR     = 'https://www.goldapi.io/api/XAU/SAR';
-    const ADJ_API     = '/api/adjustments';
-    const G_PER_OUNCE = 31.1035;
+    // مفاتيح وروابط API
+    const GOLDAPI_KEY    = 'goldapi-jzk9smbg824oq-io';
+    const GOLDAPI_URL_USD = 'https://www.goldapi.io/api/XAU/USD';
+    const GOLDAPI_URL_SAR = 'https://www.goldapi.io/api/XAU/SAR';
+    const ADJ_API         = '/api/adjustments';
+    const GRAMS_PER_OUNCE = 31.1035;
 
+    // تحديث الساعة
     function updateClock() {
       const now = new Date();
-      timeEl.textContent = new Intl.DateTimeFormat('ar-EG', {
+      const opts = {
         hour: 'numeric', minute: '2-digit', second: '2-digit',
         hour12: true, timeZone: 'Asia/Riyadh'
-      }).format(now);
+      };
+      currentTimeEl.textContent = new Intl.DateTimeFormat('ar-EG', opts).format(now);
     }
 
+    // جلب التعديلات من السيرفر
     async function fetchAdjustments() {
       try {
         const res = await fetch(ADJ_API, { cache: 'no-store' });
-        if (!res.ok) return {};
+        if (!res.ok) throw new Error('Adjustments API ' + res.status);
         return await res.json();
-      } catch {
+      } catch (e) {
+        console.error('Error fetching adjustments:', e);
         return {};
       }
     }
 
-    async function fetchGoldAPI(url) {
+    // جلب أسعار الذهب من GoldAPI
+    async function fetchGoldData(url) {
       const res = await fetch(url, {
         method: 'GET',
         headers: { 'x-access-token': GOLDAPI_KEY },
         cache: 'no-store'
       });
-      if (!res.ok) throw new Error('GoldAPI '+res.status);
-      return res.json();
+      if (!res.ok) throw new Error('GoldAPI ' + url + ' error ' + res.status);
+      return await res.json();
     }
 
-    function buildRow(label, buy, sell, isOunce = false) {
+    // بناء صف جدول السعر
+    function buildRow(buy, sell, label, isOunce = false) {
       if (isOunce) {
+        // عرض الدولار على اليسار
         return `
-          <tr>
-            <td>${label}</td>
+          <tr class="price-cell">
             <td dir="ltr">$ ${buy}</td>
             <td dir="ltr">$ ${sell}</td>
+            <td class="bg-blue-50 font-medium">${label}</td>
           </tr>`;
       } else {
+        // عرض الريال على اليسار
         return `
-          <tr>
-            <td>${label}</td>
-            <td dir="ltr">${buy} ريال</td>
-            <td dir="ltr">${sell} ريال</td>
+          <tr class="price-cell">
+            <td dir="ltr">${buy}<img src="Saudi_Riyal_Symbol.png" alt="ر.س" class="inline w-4 h-4 ml-1"/></td>
+            <td dir="ltr">${sell}<img src="Saudi_Riyal_Symbol.png" alt="ر.س" class="inline w-4 h-4 ml-1"/></td>
+            <td class="bg-blue-50 font-medium">${label}</td>
           </tr>`;
       }
     }
 
+    // تحديث وعرض الأسعار
     async function updatePrices() {
-      statusEl.className = 'status-circle bg-yellow-400';
+      statusCircleEl.className = 'status-circle bg-yellow-400';
       try {
-        // 1) بيانات GoldAPI
+        // جلب البيانات في آن واحد
         const [usd, sar, adj] = await Promise.all([
-          fetchGoldAPI(URL_USD),
-          fetchGoldAPI(URL_SAR),
+          fetchGoldData(GOLDAPI_URL_USD),
+          fetchGoldData(GOLDAPI_URL_SAR),
           fetchAdjustments()
         ]);
 
-        // 2) عرض Timestamp للتأكد من التحديث
-        console.log('🕒 USD timestamp:', usd.timestamp);
-        console.log('🕒 SAR timestamp:', sar.timestamp);
-        console.log('🔧 adjustments:', adj);
-
-        // 3) حساب الأونصة
-        const bidO = parseFloat(usd.bid  ?? usd.price);
-        const askO = parseFloat(usd.ask  ?? usd.price);
-        let html = buildRow(
-          'أونصة',
-          (bidO + (adj.oz_buy  || 0)).toFixed(2),
+        // حساب الأونصة
+        const bidO = parseFloat(usd.bid ?? usd.price);
+        const askO = parseFloat(usd.ask ?? usd.price);
+        let html  = buildRow(
+          (bidO + (adj.oz_buy || 0)).toFixed(2),
           (askO + (adj.oz_sell || 0)).toFixed(2),
-          true
+          'أونصة', true
         );
 
-        // 4) حساب فروق الجرام
-        const bidO_SAR = parseFloat(sar.bid ?? sar.price);
-        const askO_SAR = parseFloat(sar.ask ?? sar.price);
-        const spread   = (askO_SAR - bidO_SAR) / G_PER_OUNCE;
+        // حساب فروقات الجرام
+        const bidSar = parseFloat(sar.bid ?? sar.price);
+        const askSar = parseFloat(sar.ask ?? sar.price);
+        const spread = (askSar - bidSar) / GRAMS_PER_OUNCE;
 
+        // بناء صف لكل عيار
         [24, 22, 21, 18].forEach(k => {
-          const mid   = parseFloat(sar[`price_gram_${k}k`] ?? 0);
-          const buy   = (mid - spread * (k/24) + (adj[`${k}_buy`]  || 0)).toFixed(2);
-          const sell  = (mid + spread * (k/24) + (adj[`${k}_sell`] || 0)).toFixed(2);
-          html += buildRow(`عيار ${k}`, buy, sell);
+          const mid   = parseFloat(sar[`price_gram_${k}k`] || 0);
+          const buy   = (mid - spread * (k/24) + (adj[`${k}_buy`] || 0)).toFixed(2);
+          const sell  = (mid + spread * (k/24) + (adj[`${k}_sell`]|| 0)).toFixed(2);
+          html += buildRow(buy, sell, `عيار ${k}`, false);
         });
 
-        pricesEl.innerHTML    = html;
-        statusEl.className    = 'status-circle bg-green-500';
+        goldPricesEl.innerHTML = html;
+        statusCircleEl.className = 'status-circle bg-green-500';
       } catch (e) {
-        console.error('Error fetching prices:', e);
-        pricesEl.innerHTML    =
-          '<tr><td colspan="3" class="text-red-600 py-4">فشل في تحميل الأسعار</td></tr>';
-        statusEl.className    = 'status-circle bg-red-500';
+        console.error('Error updating prices:', e);
+        goldPricesEl.innerHTML = '<tr><td colspan="3" class="py-4 text-red-600">فشل في تحميل الأسعار</td></tr>';
+        statusCircleEl.className = 'status-circle bg-red-500';
       }
     }
 
-    // بداية
-    updateClock();
-    setInterval(updateClock, 1000);
-    updatePrices();
-    // انتظر دقيقة بين كل تحديث حتى تتجدد بيانات GoldAPI
-    setInterval(updatePrices, 60_000);
+    // تهيئة عند تحميل الصفحة
+    window.addEventListener('load', () => {
+      updateClock();
+      setInterval(updateClock, 1000);
+      updatePrices();
+      setInterval(updatePrices, 60000); // تحديث كل دقيقة
+    });
   </script>
-
 </body>
 </html>
