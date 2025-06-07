@@ -12,24 +12,21 @@
     body { font-family: 'Cairo', sans-serif; background-color: #fff; }
     table { table-layout: fixed; width: 100%; border-collapse: collapse; }
     th, td { border: 1px solid #E5E7EB; }
-    .price-cell { transition: color 0.3s ease; }
-    #content-wrapper { background: #fff; border-radius: .5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 2rem; margin-top: -2rem; }
     .status-circle { width: .75rem; height: .75rem; border-radius: 9999px; }
     .riyalsym { width: 1rem; height: 1rem; vertical-align: middle; margin-right: .25rem; }
 
-    /* Promotional blink */
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%      { opacity: .2; }
-    }
+    /* Blink animation for promo */
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.2; } }
     .promo-blink {
       color: #e53935;
       font-size: 1.5rem;
       font-weight: bold;
       animation: blink 1s linear infinite;
       text-align: center;
-      margin-top: .5rem;
+      margin-top: 1rem;
     }
+
+    #content-wrapper { background: #fff; border-radius: .5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 2rem; margin-top: -2rem; }
   </style>
 </head>
 <body class="bg-white text-gray-900">
@@ -39,8 +36,6 @@
     <img src="/logo.png" alt="MHMA Logo" class="h-32 sm:h-48 md:h-56 lg:h-64" />
     <!-- outlet under logo -->
     <div class="mt-2 text-2xl font-bold text-gray-800">outlet</div>
-    <!-- blinking promo under header -->
-    <div class="promo-blink">اشتر الآن بسعر الذهب + 40 ريال مصنعية فقط على جميع الأصناف</div>
   </header>
 
   <main class="px-4 py-6 flex justify-center">
@@ -57,15 +52,18 @@
       <table class="bg-white text-center rounded-md overflow-hidden mx-auto">
         <thead class="bg-blue-50">
           <tr>
+            <th class="py-4 text-lg">العيار</th>
             <th class="py-4 text-lg">الشراء</th>
             <th class="py-4 text-lg">البيع</th>
-            <th class="py-4 text-lg">العيار</th>
           </tr>
         </thead>
         <tbody id="gold-prices" class="text-base sm:text-lg">
           <tr><td colspan="3" class="py-8">Loading...</td></tr>
         </tbody>
       </table>
+
+      <!-- Promotional blink under table -->
+      <div class="promo-blink">اشتر الآن بسعر الذهب + 40 ريال مصنعية فقط على جميع الأصناف</div>
     </div>
   </main>
 
@@ -115,20 +113,20 @@
       if (isOunce) {
         return `
           <tr>
+            <td class="py-4 bg-blue-50 font-medium">${label}</td>
             <td class="price-cell py-4">$ ${buy}</td>
             <td class="price-cell py-4">$ ${sell}</td>
-            <td class="py-4 bg-blue-50 font-medium">${label}</td>
           </tr>`;
       } else {
         return `
           <tr>
+            <td class="py-4 bg-blue-50 font-medium">${label}</td>
             <td class="price-cell py-4">
               <img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="riyalsym"/>${buy}
             </td>
             <td class="price-cell py-4">
               <img src="/Saudi_Riyal_Symbol.png" alt="ريال" class="riyalsym"/>${sell}
             </td>
-            <td class="py-4 bg-blue-50 font-medium">${label}</td>
           </tr>`;
       }
     }
