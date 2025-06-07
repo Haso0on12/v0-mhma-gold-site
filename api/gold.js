@@ -1,27 +1,30 @@
-// ====================================================
-// api/gold.js
-// ====================================================
-
-// وظيفة بسيطة تعتمد على Node.js Native (IncomingMessage & ServerResponse)
-// لجلب بيانات الذهب من GoldAPI
-
 import https from "https";
 
-// استخدم مفتاحك الخاص من goldapi.io
-const GOLDAPI_KEY = process.env.goldapi-jzk9smbg824oq-io; 
-// تأكّد من إضافة GOLDAPI_KEY في متغيّرات البيئة على Vercel
+const GOLDAPI_KEY = process.env.goldapi_jzk9smbg824oq_io;
 
 export default function handler(req, res) {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", "GET");
-    res.statusCode = 405;
-    return res.end(`Method ${req.method} Not Allowed`);
+  // 1) تعامل مع preflight
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.statusCode = 204;
+    return res.end();
   }
 
-  // 1) إعداد خيارات طلب HTTPS إلى goldapi.io
+  if (req.method !== "GET") {
+    res.setHeader("Allow", "GET,OPTIONS");
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+
+  // 2) هيدرات CORS للطلب الرئيسي
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
   const options = {
     hostname: "www.goldapi.io",
-    path: "/api/XAU/USD", // تحصل على سعر اونصة ذهب مقابل الدولار الأميركي
+    path: "/api/XAU/USD",
     method: "GET",
     headers: {
       "x-access-token": GOLDAPI_KEY,
@@ -29,37 +32,25 @@ export default function handler(req, res) {
     }
   };
 
-  // 2) إنشاء الطلب
-  const goldReq = https.request(options, (goldRes) => {
+  const goldReq = https.request(options, goldRes => {
     let data = "";
-
-    goldRes.on("data", (chunk) => {
-      data += chunk;
-    });
-
+    goldRes.on("data", chunk => { data += chunk });
     goldRes.on("end", () => {
       try {
         const parsed = JSON.parse(data);
-        // نعيد JSON كاملاً كما هو من goldapi.io
         res.setHeader("Content-Type", "application/json");
-        res.statusCode = 200;
-        return res.end(JSON.stringify(parsed));
-      } catch (parseError) {
-        console.error("JSON.parse failed in /api/gold:", parseError);
-        res.setHeader("Content-Type", "application/json");
-        res.statusCode = 502; // خطأ من طرف الجهة الخارجية بشكل أو بآخر
-        return res.end(JSON.stringify({ error: "Failed to parse GoldAPI response" }));
+        return res.status(200).end(JSON.stringify(parsed));
+      } catch (e) {
+        console.error("JSON.parse failed:", e);
+        return res.status(502).json({ error: "Bad response from GoldAPI" });
       }
     });
   });
 
-  goldReq.on("error", (err) => {
-    console.error("GoldAPI request error:", err);
-    res.setHeader("Content-Type", "application/json");
-    res.statusCode = 502;
-    return res.end(JSON.stringify({ error: "Failed to fetch from GoldAPI" }));
+  goldReq.on("error", err => {
+    console.error("GoldAPI error:", err);
+    return res.status(502).json({ error: "Failed to fetch GoldAPI" });
   });
 
-  // إنهاء الطلب (GET لا يحتاج body)
   goldReq.end();
 }
