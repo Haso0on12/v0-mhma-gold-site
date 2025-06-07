@@ -102,7 +102,6 @@
         if (current > prev) cls = 'text-green-500';
         else if (current < prev) cls = 'text-red-500';
       }
-      // إعادة القيمة بعد 0.5 ثانية
       setTimeout(() => {
         const el = document.getElementById(key);
         if (el) el.classList.remove('text-green-500','text-red-500');
@@ -113,16 +112,16 @@
     async function fetchGoldPrice() {
       circleEl.className = 'status-circle bg-yellow-400';
       try {
+        const timestamp = Date.now();
         const [usdRes, sarRes, adj] = await Promise.all([
-          fetch(GOLDAPI_URL_USD, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' }),
-          fetch(GOLDAPI_URL_SAR, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' }),
+          fetch(`${GOLDAPI_URL_USD}?t=${timestamp}`, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' }),
+          fetch(`${GOLDAPI_URL_SAR}?t=${timestamp}`, { headers: { "x-access-token": GOLDAPI_KEY }, cache: 'no-store' }),
           fetchAdjustments()
         ]);
         const dataUSD = await usdRes.json();
         const dataSAR = await sarRes.json();
 
         let html = '';
-        // الأونصة
         const bidO = parseFloat(dataUSD.bid ?? dataUSD.price);
         const askO = parseFloat(dataUSD.ask ?? dataUSD.price);
         const bidOClass = getCellClass('ounce-buy', bidO + (adj.oz_buy||0));
@@ -136,7 +135,6 @@
         prevValues['ounce-buy']  = bidO + (adj.oz_buy||0);
         prevValues['ounce-sell'] = askO + (adj.oz_sell||0);
 
-        // الجرامات
         const sarBidO = parseFloat(dataSAR.bid ?? dataSAR.price);
         const sarAskO = parseFloat(dataSAR.ask ?? dataSAR.price);
         const spreadG = (sarAskO - sarBidO) / GRAMS_PER_OUNCE;
@@ -168,7 +166,7 @@
     }
 
     updateClock(); setInterval(updateClock, 1000);
-    fetchGoldPrice(); setInterval(fetchGoldPrice, 5000);
+    fetchGoldPrice(); setInterval(fetchGoldPrice, 2000);
   </script>
 </body>
 </html>
