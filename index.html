@@ -13,12 +13,18 @@
     body { font-family:'Cairo',sans-serif; background:#fff }
     table { table-layout:fixed; width:100% }
     .price-cell { transition: color .3s ease }
-    #content-wrapper { background:#fff; border-radius:.5rem; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:2rem; margin-top:-1.5rem }
-    /* تقليل الرفع على الشاشات الكبيرة لضمان ظهور النص كاملاً */
+    /* جعل المحتوى يبدأ أسفل الهيدر بشكل مناسب */
+    #content-wrapper {
+      background:#fff;
+      border-radius:.5rem;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
+      padding:2rem;
+      margin-top:-1rem;
+    }
     @media (min-width: 640px) {
       #content-wrapper {
-        padding: 2rem;
-        margin-top: -1.5rem;
+        padding:2rem;
+        margin-top:-.5rem; /* تقليل التداخل على الشاشات الكبيرة */
       }
     }
     .status-circle { width:.75rem; height:.75rem; border-radius:9999px }
